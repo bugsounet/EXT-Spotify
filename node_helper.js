@@ -6,6 +6,14 @@ var logSpotify = (...args) => { /* do nothing */ }
 const pm2 = require("pm2")
 const systemd = require("systemd")
 const spotify = require("./components/spotifyLibrary.js")
+const path = require("path")
+const fs = require("fs")
+
+/**
+ * dependencies
+ * Librespot: apt-get install libasound2-dev
+ *
+**/
 
 module.exports = NodeHelper.create({
   start: function () {
@@ -27,7 +35,7 @@ module.exports = NodeHelper.create({
         this.retry = setTimeout(() => {
           this.spotify.play(payload, (code, error, result) => {
             if ((code == 404) && (result.error.reason == "NO_ACTIVE_DEVICE")) {
-              logSpotify("[SPOTIFY] RETRY playing...")
+              logSpotify("RETRY playing...")
               this.socketNotificationReceived("SPOTIFY_PLAY", payload)
             }
             if ((code !== 204) && (code !== 202)) {
@@ -36,7 +44,7 @@ module.exports = NodeHelper.create({
               return console.log("[SPOTIFY:PLAY] RETRY Error", code, error, result)
             }
             else {
-              logSpotify("[SPOTIFY] RETRY: DONE_PLAY")
+              logSpotify("RETRY: DONE_PLAY")
               this.retryPlayerCount = 0
               if (this.config.player.type == "Librespot") this.sendSocketNotification("INFORMATION", { message: "LibrespotConnected", values: this.config.deviceName })
               if (this.config.player.type == "Raspotify") this.sendSocketNotification("INFORMATION", { message: "RaspotifyConnected", values: this.config.deviceName })
@@ -74,7 +82,7 @@ module.exports = NodeHelper.create({
             return console.log("[SPOTIFY:PLAY] Error", code, result)
           }
           else {
-            logSpotify("[SPOTIFY] DONE_PLAY")
+            logSpotify("DONE_PLAY")
             this.retryPlayerCount = 0
           }
         })
@@ -84,20 +92,20 @@ module.exports = NodeHelper.create({
           if (code !== 204) console.log("[SPOTIFY:VOLUME] Error", code, result)
           else {
             this.sendSocketNotification("DONE_SPOTIFY_VOLUME", payload)
-            logSpotify("[SPOTIFY] DONE_VOLUME:", payload)
+            logSpotify("DONE_VOLUME:", payload)
           }
         })
         break
       case "SPOTIFY_PAUSE":
         this.spotify.pause((code, error, result) => {
           if ((code !== 204) && (code !== 202)) console.log("[SPOTIFY:PAUSE] Error", code, result)
-          else logSpotify("[SPOTIFY] DONE_PAUSE")
+          else logSpotify("DONE_PAUSE")
         })
         break
       case "SPOTIFY_TRANSFER":
         this.spotify.transferByName(payload, (code, error, result) => {
           if ((code !== 204) && (code !== 202)) console.log("[SPOTIFY:TRANSFER] Error", code, result)
-          else logSpotify("[SPOTIFY] DONE_TRANSFER")
+          else logSpotify("DONE_TRANSFER")
         })
         break
       case "SPOTIFY_STOP":
@@ -107,7 +115,7 @@ module.exports = NodeHelper.create({
       case "SPOTIFY_NEXT":
         this.spotify.next((code, error, result) => {
           if ((code !== 204) && (code !== 202)) console.log("[SPOTIFY:NEXT] Error", code, result)
-          else logSpotify("[SPOTIFY] DONE_NEXT")
+          else logSpotify("DONE_NEXT")
         })
         break
       case "SPOTIFY_PREVIOUS":
@@ -119,13 +127,13 @@ module.exports = NodeHelper.create({
       case "SPOTIFY_SHUFFLE":
         this.spotify.shuffle(payload,(code, error, result) => {
           if ((code !== 204) && (code !== 202)) console.log("[SPOTIFY:SHUFFLE] Error", code, result)
-          else logSpotify("[SPOTIFY] DONE_SHUFFLE")
+          else logSpotify("DONE_SHUFFLE")
         })
         break
       case "SPOTIFY_REPEAT":
         this.spotify.repeat(payload, (code, error, result) => {
           if ((code !== 204) && (code !== 202)) console.log("[SPOTIFY:REPEAT] Error", code, result)
-          else logSpotify("[SPOTIFY] DONE_REPEAT")
+          else logSpotify("DONE_REPEAT")
         })
         break
       case "SEARCH_AND_PLAY":
@@ -167,6 +175,7 @@ module.exports = NodeHelper.create({
 
   /** launch librespot with pm2 **/
   Librespot: function(restart= false) {
+    this.pm2 = pm2
     var file = "librespot"
     var filePath = path.resolve(__dirname, "components/librespot/target/release", file)
     var cacheDir = __dirname + "/components/librespot/cache"
@@ -207,7 +216,7 @@ module.exports = NodeHelper.create({
             "-n", this.config.deviceName,
             "-u", this.config.player.email,
             "-p", this.config.player.password,
-            "--initial-volume" , this.config.player.maxVolume,
+            "-R", this.config.player.maxVolume,
             "-c", cacheDir
           ]
         }, (err, proc) => {
