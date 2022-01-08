@@ -25,9 +25,8 @@
   },
   "homepage": "http://wiki.bugsounet.fr/en/EXT-Spotify",
   "dependencies": {
-    "@bugsounet/spotify": "^1.0.5",
-    "pm2": "^5.1.2",
-    "request": "^2.88.2",
-    "systemd": "^0.4.0"
+    "@bugsounet/spotify": "1.0.2",
+    "@bugsounet/systemd": "^1.0.0",
+    "pm2": "^5.1.2"
   }
 }

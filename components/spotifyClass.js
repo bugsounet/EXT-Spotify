@@ -399,7 +399,7 @@ class Spotify {
     )
     const text = document.createElement("span")
     text.className = "text"
-    text.textContent = this.config.SpotifyForGA
+    text.textContent = "Spotify"
     logo.appendChild(text)
 
     return logo

@@ -15,7 +15,7 @@ Module.register("EXT-Spotify", {
       updateInterval: 1000,
       idleInterval: 10000,
       useBottomBar: false,
-      PATH: "../", // Needed Don't modify it !
+      PATH: "../../../", // Needed Don't modify it !
       TOKEN: "tokenSpotify.json",
       CLIENT_ID: "",
       CLIENT_SECRET: "",
@@ -59,9 +59,7 @@ Module.register("EXT-Spotify", {
       }
     }
     this.config.visual.deviceDisplay = "En écoute sur:" //this.translate("SpotifyListenText")
-    this.config.visual.SpotifyForGA = "Spotify"
     this.Spotify = new Spotify(this.config.visual, callbacks, this.config.debug)
-    this.spotifyNewVolume = false
   },
 
   getScripts: function() {
@@ -94,6 +92,7 @@ Module.register("EXT-Spotify", {
       case "DOM_OBJECTS_CREATED":
         this.sendSocketNotification("INIT", this.config)
         if (this.config.visual.useBottomBar) this.Spotify.prepare()
+        this.sendNotification("EXT_HELLO", this.name)
         break
       case "ASSISTANT_LISTEN":
       case "ASSISTANT_THINK":
@@ -357,5 +356,5 @@ Module.register("EXT-Spotify", {
         this.sendSocketNotification("SEARCH_AND_PLAY", pl)
         break
     }
-  },
+  }
 })

@@ -4,8 +4,8 @@ var NodeHelper = require("node_helper")
 var logSpotify = (...args) => { /* do nothing */ }
 
 const pm2 = require("pm2")
-const systemd = require("systemd")
-const spotify = require("./components/spotifyLibrary.js")
+const systemd = require("@bugsounet/systemd")
+const spotify = require("@bugsounet/spotify")
 const path = require("path")
 const fs = require("fs")
 
@@ -17,7 +17,9 @@ const fs = require("fs")
 
 module.exports = NodeHelper.create({
   start: function () {
-    
+    this.retry = null
+    this.timeout= null
+    this.retryPlayerCount = 0
   },
 
   socketNotificationReceived: function (noti, payload) {
@@ -150,27 +152,32 @@ module.exports = NodeHelper.create({
     logSpotify("Starting Spotify module...")
     try {
       this.spotify = new spotify(this.config.visual,
-        (noti, params) => {
-          //console.log("SPOTIFY Noti:", noti, params)
-          this.sendSocketNotification(noti, params)
-        },
+        (noti, params) => this.sendSocketNotification(noti, params),
         this.config.debug
       )
       this.spotify.start()
     } catch (e) {
-      console.log("[SPOTIFY] " + e)
       let error = "SPOTIFY: tokenSpotify.json file not found !"
-      this.sendSocketNotification("WARNING" , {  message: error } )
+      console.log(error)
+      this.sendSocketNotification("WARNING" , {  message: error })
     }
-    if (this.config.player.type == "Librespot") {
-      console.log("[SPOTIFY] Launch Librespot...")
-      this.Librespot(true)
-    } else if (this.config.player.type == "Raspotify") {
-      this.raspotify = new systemd("raspotify")
-      console.log("[SPOTIFY] Launch Raspotify...")
-      this.Raspotify(true)
+
+    if (this.spotify && this.spotify.token) {
+      switch (this.config.player.type) {
+        case "Librespot":
+          console.log("[SPOTIFY] Launch Librespot...")
+          this.Librespot(true)
+          break
+        case "Raspotify":
+          this.raspotify = new systemd("raspotify")
+          console.log("[SPOTIFY] Launch Raspotify...")
+          this.Raspotify(true)
+          break
+        default:
+          console.log("[SPOTIFY] No player activated.")
+          break
+      }
     }
-    else { console.log("[SPOTIFY] No player activated.") }
   },
 
   /** launch librespot with pm2 **/
