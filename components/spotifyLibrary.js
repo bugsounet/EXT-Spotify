@@ -1,7 +1,7 @@
 //
-// Spotify library
+// Spotify library v1.0.2
 // Developers : Seongnoh Sean Yi (eouia0819@gmail.com)
-//              bugsounet (bugsounet@bugsnana.fr)
+//              bugsounet (bugsounet@bugsounet.fr)
 //
 // @todo: to recode with node_fetch
 // axios: not a good idea

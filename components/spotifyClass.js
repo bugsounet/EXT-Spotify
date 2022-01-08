@@ -1,4 +1,4 @@
-/* Spotify library rev: 210526 */
+/* Spotify class rev: 220108 */
 
 class Spotify {
   constructor (Config, callbacks, debug) {

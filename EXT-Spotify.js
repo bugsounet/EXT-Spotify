@@ -43,13 +43,17 @@ Module.register("EXT-Spotify", {
     }
     this.assistantSpeak= false
     var callbacks = {
-      "spotifyStatus": (status) => { // try to use spotify callback to unlock screen ...
+      "spotifyStatus": (status) => {
         if (status) {
           /** Spotify active **/
           this.spotify.connected = true
+          this.sendNotification("EXT_SPOTIFY_CONNECTED")
         } else {
           /** Spotify inactive **/
+          this.sendNotification("EXT_SPOTIFY_DISCONNECTED")
           this.spotify.connected = false
+          logSpotify("spotifyStatus: PLAYER Disconnected")
+          this.sendNotification("EXT_SPOTIFY_PLAYER-DISCONNECTED")
           this.spotify.player = false
         }
       }
@@ -62,7 +66,8 @@ Module.register("EXT-Spotify", {
 
   getScripts: function() {
     return [
-      "/modules/EXT-Spotify/components/spotifyClass.js"
+      "/modules/EXT-Spotify/components/spotifyClass.js",
+      "https://cdn.materialdesignicons.com/5.2.45/css/materialdesignicons.min.css"
     ]
   },
 
@@ -113,6 +118,7 @@ Module.register("EXT-Spotify", {
         if (!this.spotify.forceVolume && (this.spotify.targetVolume <= this.config.player.minVolume)) return
         this.sendSocketNotification("SPOTIFY_VOLUME", this.spotify.targetVolume)
         break
+      case "EXT_SPOTIFY_VOLUME":
       case "EXT_SPOTIFY_VOLUME_SET":
         if (!this.spotify.player || !payload) return
         if (isNaN(payload)) return console.log("[SPOTIFY] Volume Must be a number ! [0-100]")
@@ -126,6 +132,34 @@ Module.register("EXT-Spotify", {
           this.spotify.forceVolume = false
         }
         break
+      case "EXT_SPOTIFY_PLAY":
+        this.SpotifyCommand("PLAY")
+        break
+      case "EXT_SPOTIFY_PAUSE":
+        this.SpotifyCommand("PAUSE")
+        break
+      case "EXT_STOP":
+      case "EXT_SPOTIFY_STOP":
+        this.SpotifyCommand("STOP")
+        break
+      case "EXT_SPOTIFY_NEXT":
+        this.SpotifyCommand("NEXT")
+        break
+      case "EXT_SPOTIFY_PREVIOUS":
+        this.SpotifyCommand("PREVIOUS")
+        break
+      case "EXT_SPOTIFY_SHUFFLE":
+        this.SpotifyCommand("SHUFFLE")
+        break
+      case "EXT_SPOTIFY_REPEAT":
+        this.SpotifyCommand("REPEAT")
+        break
+      case "EXT_SPOTIFY_TRANSFER":
+        this.SpotifyCommand("TRANSFER")
+        break
+      case "EXT_SPOTIFY_SEARCH":
+        this.SpotifyCommand("SEARCH", payload)
+        break
     }
   },
 
@@ -135,16 +169,24 @@ Module.register("EXT-Spotify", {
       case "SPOTIFY_PLAY":
         this.Spotify.updateCurrentSpotify(payload)
         if (!this.spotify.connected) return // don't check if not connected (use spotify callback)
-        if (payload && payload.device && payload.device.name) { //prevent crash
+        if (payload && payload.device && payload.device.name) {
           this.spotify.repeat = payload.repeat_state
           this.spotify.shuffle = payload.shuffle_state
 
           if (payload.device.name == this.config.deviceName) {
             this.spotify.currentVolume = payload.device.volume_percent
-            if (!this.spotify.player) this.spotify.player = true
+            if (!this.spotify.player) {
+              this.spotify.player = true
+              logSpotify("SPOTIFY_PLAY: PLAYER Connected")
+              this.sendNotification("EXT_SPOTIFY_PLAYER-CONNECTED")
+            }
           }
           else {
-            if (this.spotify.player) this.EXT.spotify.player = false
+            if (this.spotify.player) {
+              this.spotify.player = false
+              logSpotify("SPOTIFY_PLAY: PLAYER Disconnected")
+              this.sendNotification("EXT_SPOTIFY_PLAYER-DISCONNECTED")
+            }
           }
         }
         break
@@ -153,7 +195,7 @@ Module.register("EXT-Spotify", {
         this.spotify.player = false
         break
       case "DONE_SPOTIFY_VOLUME":
-        logSpotify("[SPOTIFY] Volume done:", payload)
+        logSpotify("Volume done:", payload)
         break
     }
   },
@@ -161,14 +203,14 @@ Module.register("EXT-Spotify", {
   resume: function() {
     if (this.spotify.connected && this.config.visual.useBottomBar) {
       this.showSpotify()
-      logEXT("Spotify is resumed.")
+      logSpotify("Spotify is resumed.")
     }
   },
 
   suspend: function() {
     if (this.spotify.connected && this.config.visual.useBottomBar) {
       this.hideSpotify()
-      logEXT("Spotify is suspended.")
+      logSpotify("Spotify is suspended.")
     }
   },
 
@@ -258,29 +300,18 @@ Module.register("EXT-Spotify", {
     }
   },
 
-  /** Spotify commands (for recipe) **/
+  /** Spotify commands **/
   SpotifyCommand: function(command, payload) {
-    //this.EXT = this.displayEXTResponse.EXT
     switch (command) {
       case "PLAY":
-        if (this.EXT.youtube.displayed && this.EXT.spotify.player) {
-          if (this.EXT.radioPlayer.play) this.displayEXTResponse.radio.pause()
-          if (this.config.Extented.youtube.useVLC) {
-            this.sendSocketNotification("YT_STOP")
-            this.EXT.youtube.displayed = false
-            this.displayEXTResponse.showYT()
-            this.displayEXTResponse.EXTUnlock()
-            this.displayEXTResponse.resetYT()
-          }
-          else this.displayEXTResponse.player.command("stopVideo")
-        }
         this.sendSocketNotification("SPOTIFY_PLAY")
         break
       case "PAUSE":
         this.sendSocketNotification("SPOTIFY_PAUSE")
         break
       case "STOP":
-        if (this.EXT.spotify.player) this.sendSocketNotification("SPOTIFY_STOP")
+        if (!this.spotify.connected) return // don't force to stop if no device play...
+        if (this.spotify.player) this.sendSocketNotification("SPOTIFY_STOP")
         else this.sendSocketNotification("SPOTIFY_PAUSE")
         break
       case "NEXT":
@@ -290,10 +321,10 @@ Module.register("EXT-Spotify", {
         this.sendSocketNotification("SPOTIFY_PREVIOUS")
         break
       case "SHUFFLE":
-        this.sendSocketNotification("SPOTIFY_SHUFFLE", !this.EXT.spotify.shuffle)
+        this.sendSocketNotification("SPOTIFY_SHUFFLE", !this.spotify.shuffle)
         break
       case "REPEAT":
-        this.sendSocketNotification("SPOTIFY_REPEAT", (this.EXT.spotify.repeat == "off" ? "track" : "off"))
+        this.sendSocketNotification("SPOTIFY_REPEAT", (this.spotify.repeat == "off" ? "track" : "off"))
         break
       case "TRANSFER":
         this.sendSocketNotification("SPOTIFY_TRANSFER", payload)
@@ -324,19 +355,7 @@ Module.register("EXT-Spotify", {
           }
         }
         this.sendSocketNotification("SEARCH_AND_PLAY", pl)
-        if (this.EXT.youtube.displayed && this.EXT.spotify.player) {
-          if (this.config.Extented.youtube.useVLC) {
-            this.sendSocketNotification("YT_STOP")
-            this.EXT.youtube.displayed = false
-            this.displayEXTResponse.showYT()
-            this.displayEXTResponse.EXTUnlock()
-            this.displayEXTResponse.resetYT()
-          }
-          else this.displayEXTResponse.player.command("stopVideo")
-        }
         break
     }
-
   },
-
 })
