@@ -123,7 +123,7 @@ module.exports = NodeHelper.create({
       case "SPOTIFY_PREVIOUS":
         this.spotify.previous((code, error, result) => {
           if ((code !== 204) && (code !== 202)) console.log("[SPOTIFY:PREVIOUS] Error", code, result)
-          else logSpotify("[SPOTIFY] DONE_PREVIOUS")
+          else logSpotify("DONE_PREVIOUS")
         })
         break
       case "SPOTIFY_SHUFFLE":
@@ -139,7 +139,7 @@ module.exports = NodeHelper.create({
         })
         break
       case "SEARCH_AND_PLAY":
-        logSpotify("[SPOTIFY] Search and Play", payload)
+        logSpotify("Search and Play", payload)
         this.searchAndPlay(payload.query, payload.condition)
         break
 
@@ -247,7 +247,7 @@ module.exports = NodeHelper.create({
   LibrespotRestart() {
     this.pm2.restart("librespot", (err, proc) => {
       if (err) console.log("[SPOTIFY] ~PM2~ Librespot error: " + err)
-      else logSpotify("[SPOTIFY] ~PM2~ Restart Librespot")
+      else logSpotify("~PM2~ Restart Librespot")
     })
   },
 
@@ -313,14 +313,14 @@ module.exports = NodeHelper.create({
           }
         }
         if (foundForPlay && condition.autoplay) {
-          logSpotify("[SPOTIFY] Search and Play Result:", foundForPlay)
+          logSpotify("Search and Play Result:", foundForPlay)
           this.socketNotificationReceived("SPOTIFY_PLAY", foundForPlay)
         } else {
-          logSpotify("[SPOTIFY] Search and Play No Result")
+          logSpotify("Search and Play No Result")
           this.sendSocketNotification("WARNING" , { message: "SpotifyNoResult" })
         }
       } else { //when fail
-        console.log("[SPOTIFY] Search and Play failed !")
+        console.log("Search and Play failed !")
         this.sendSocketNotification("WARNING" , { message: "SpotifySearchFailed" })
       }
     })

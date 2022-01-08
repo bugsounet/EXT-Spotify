@@ -117,7 +117,6 @@ Module.register("EXT-Spotify", {
         if (!this.spotify.forceVolume && (this.spotify.targetVolume <= this.config.player.minVolume)) return
         this.sendSocketNotification("SPOTIFY_VOLUME", this.spotify.targetVolume)
         break
-      case "EXT_SPOTIFY_VOLUME":
       case "EXT_SPOTIFY_VOLUME_SET":
         if (!this.spotify.player || !payload) return
         if (isNaN(payload)) return console.log("[SPOTIFY] Volume Must be a number ! [0-100]")
@@ -138,6 +137,9 @@ Module.register("EXT-Spotify", {
         this.SpotifyCommand("PAUSE")
         break
       case "EXT_STOP":
+        if (!this.spotify.connected) return // don't force to stop if no device play...
+        if (this.spotify.player) this.sendSocketNotification("SPOTIFY_STOP")
+        break
       case "EXT_SPOTIFY_STOP":
         this.SpotifyCommand("STOP")
         break
