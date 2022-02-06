@@ -6,7 +6,9 @@
   "main": "EXT-Spotify.js",
   "scripts": {
     "preinstall": "installer/preinstall.sh",
-    "postinstall": "installer/postinstall.sh"
+    "postinstall": "installer/postinstall.sh",
+    "librespot": "installer/librespot.sh",
+    "raspotify": "installer/raspotify.sh"
   },
   "keywords": [
     "magic mirror",

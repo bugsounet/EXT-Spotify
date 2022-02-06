@@ -1,6 +1,6 @@
 #!/bin/bash
 # +---------------------+
-# | librespot installer |
+# | Raspotify installer |
 # | @bugsounet          |
 # +---------------------+
 
@@ -22,28 +22,34 @@ cd "$Installer_dir"
 source utils.sh
 
 # Go back to module root
-cd ..
+# cd ..
 
+# module name
+Installer_info "Welcome to Raspotify for EXT-Spotify!"
+echo
 
-Installer_info "Welcome to Librespot for EXT-Spotify!"
-echo
-cd components
-Installer_info "Cloning repository..."
-git clone https://github.com/librespot-org/librespot.git
-Installer_success "Done."
-echo
-Installer_info "Installing Rust..."
-curl https://sh.rustup.rs -sSf | sh -s -- --profile default -y
-source $HOME/.cargo/env
-Installer_success "Done."
-echo
-Installer_info "Installing Librespot..."
+Installer_info "Installing Raspotify..."
 Installer_warning "Open the fridge and take a beer..."
-Installer_warning "It could takes ~30 minutes."
-cd librespot
-cargo build --release --no-default-features --features alsa-backend || (
+Installer_warning "And keep cool..."
+Install_error=0
+
+curl -sL https://dtcooper.github.io/raspotify/install.sh | sh || Install_error=1
+
+if  [ "$Install_error" == 1 ]; then
+  echo
   Installer_error "Error detected !"
   exit 255
-)
+fi
+
 echo
-Installer_exit "Librespot for EXT-Spotify is now installed !"
+Installer_info "Raspotify Configuration..."
+sudo node RaspotifyConfig || Install_error=1
+
+if  [ "$Install_error" == 1 ]; then
+  echo
+  Installer_error "Error detected !"
+  exit 255
+else
+  echo
+  Installer_exit "Raspotify for EXT-Spotify is now installed !"
+fi
