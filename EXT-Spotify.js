@@ -2,7 +2,7 @@
  ** Module : EXT-Spotify
  ** @bugsounet
  ** ©01/2022
- ** support: http://forum.bugsounet.fr
+ ** support: https://forum.bugsounet.fr
  **/
 
 logSpotify = (...args) => { /* do nothing */ }
@@ -38,8 +38,7 @@ Module.register("EXT-Spotify", {
       currentVolume: 0,
       targetVolume: this.config.player.maxVolume,
       repeat: null,
-      shuffle: null,
-      forceVolume: false
+      shuffle: null
     }
     this.assistantSpeak= false
     var callbacks = {
@@ -58,22 +57,36 @@ Module.register("EXT-Spotify", {
         }
       }
     }
-    this.config.visual.deviceDisplay = "En écoute sur:" //this.translate("SpotifyListenText")
+    this.config.visual.deviceDisplay = this.translate("SpotifyListenText")
     this.Spotify = new Spotify(this.config.visual, callbacks, this.config.debug)
   },
 
   getScripts: function() {
     return [
       "/modules/EXT-Spotify/components/spotifyClass.js",
-      "https://cdn.materialdesignicons.com/5.2.45/css/materialdesignicons.min.css"
+      "https://code.iconify.design/1/1.0.6/iconify.min.js"
     ]
   },
 
   getStyles: function () {
     return [
       "EXT-Spotify.css",
+      "https://cdn.materialdesignicons.com/5.2.45/css/materialdesignicons.min.css",
       "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
     ]
+  },
+
+  getTranslations: function() {
+    return {
+      en: "translations/en.json",
+      fr: "translations/fr.json",
+      it: "translations/it.json",
+      de: "translations/de.json",
+      es: "translations/es.json",
+      nl: "translations/nl.json",
+      pt: "translations/pt.json",
+      ko: "translations/ko.json"
+    }
   },
 
   getDom: function() {
@@ -114,21 +127,25 @@ Module.register("EXT-Spotify", {
         break
       case "EXT_SPOTIFY-VOLUME_MAX":
         if (!this.spotify.player) return
-        if (!this.spotify.forceVolume && (this.spotify.targetVolume <= this.config.player.minVolume)) return
+        if (this.spotify.targetVolume <= this.config.player.minVolume) return
         this.sendSocketNotification("SPOTIFY_VOLUME", this.spotify.targetVolume)
         break
       case "EXT_SPOTIFY-VOLUME_SET":
         if (!this.spotify.player || !payload) return
-        if (isNaN(payload)) return console.log("[SPOTIFY] Volume Must be a number ! [0-100]")
+        if (isNaN(payload)) {
+          this.sendNotification("EXT_ALERT", {
+            type: "error",
+            message: "Volume MUST be a number ! [0-100]",
+            icon: "modules/EXT-Spotify/components/Spotify-Logo.png"
+          })
+          console.error("[SPOTIFY] Volume Must be a number ! [0-100]")
+          return
+        }
         if (payload > 100) payload = 100
         if (payload < 0) payload = 0
-        console.log("[SPOTIFY] Volume: " + payload)
+        logSpotify("Volume SET: " + payload)
         this.spotify.targetVolume = payload
-        if (this.assistantSpeak) this.spotify.forceVolume = true
-        else {
-          this.sendSocketNotification("SPOTIFY_VOLUME", this.spotify.targetVolume)
-          this.spotify.forceVolume = false
-        }
+        if (!this.assistantSpeak) this.sendSocketNotification("SPOTIFY_VOLUME", this.spotify.targetVolume)
         break
       case "EXT_SPOTIFY-PLAY":
         this.SpotifyCommand("PLAY")
@@ -156,7 +173,7 @@ Module.register("EXT-Spotify", {
         this.SpotifyCommand("REPEAT")
         break
       case "EXT_SPOTIFY-TRANSFER":
-        this.SpotifyCommand("TRANSFER")
+        this.SpotifyCommand("TRANSFER", payload)
         break
       case "EXT_SPOTIFY-SEARCH":
         this.SpotifyCommand("SEARCH", payload)
@@ -197,6 +214,20 @@ Module.register("EXT-Spotify", {
         break
       case "DONE_SPOTIFY_VOLUME":
         logSpotify("Volume done:", payload)
+        break
+      case "INFORMATION":
+        this.sendNotification("EXT_ALERT", {
+          type: "information",
+          message: this.translate(payload.message, {VALUES: payload.values}),
+          icon: "modules/EXT-Spotify/components/Spotify-Logo.png"
+        })
+        break
+      case "WARNING":
+        this.sendNotification("EXT_ALERT", {
+          type: "warning",
+          message: this.translate(payload.message, {VALUES: payload.values}),
+          icon: "modules/EXT-Spotify/components/Spotify-Logo.png"
+        })
         break
     }
   },

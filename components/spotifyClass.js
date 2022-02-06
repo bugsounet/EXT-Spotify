@@ -44,7 +44,6 @@ class Spotify {
     viewDom.className= "inactive mini animate__animated"
     viewDom.style.setProperty('--animate-duration', '1s')
 
-
     viewDom.appendChild(this.getHTMLElementWithID('div', "EXT_SPOTIFY_BACKGROUND"))
 
     const cover_img = this.getHTMLElementWithID('img', "EXT_SPOTIFY_COVER_IMAGE")
@@ -229,7 +228,7 @@ class Spotify {
       s.classList.remove("playing")
     }
 
-    if (this.config.control !== "hidden" && this.config.useBottomBar) {
+    if (this.config.useBottomBar) {
       const p = document.getElementById("EXT_SPOTIFY_CONTROL_PLAY")
       p.className = isPlaying ? "playing" : "pausing"
       const icon = isPlaying ? "mdi:play-circle-outline" : "mdi:pause-circle-outline"
@@ -399,7 +398,7 @@ class Spotify {
     )
     const text = document.createElement("span")
     text.className = "text"
-    text.textContent = "Spotify"
+    text.innerHTML = "<span>Spotify<sup>Ⓡ</sup></span>"
     logo.appendChild(text)
 
     return logo

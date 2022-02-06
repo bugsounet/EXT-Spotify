@@ -1,0 +1,21 @@
+{
+  "LibrespotNoResponse": "Geen reactie van librespot! ({VALUES})",
+  "LibrespotConnected": "Verbonden met librespot! ({VALUES})",
+  "LibrespotConnecting": " Even geduld, verbinding maken met librespot...",
+  "LibrespotNoInstalled": "librespot is niet geïnstalleerd !",
+  "LibrespotError": "Librespot: {VALUES}",
+
+  "RaspotifyNoResponse": "Geen reactie van raspotify! ({VALUES})",
+  "RaspotifyConnected": "Verbonden met raspotify! ({VALUES})",
+  "RaspotifyConnecting": "Even geduld, verbinding maken met raspotify...",
+  "RaspotifyNoInstalled": "Raspotify is niet geïnstalleerd !",
+  "RaspotifyError": "Raspotify: {VALUES}",
+
+  "SpotifyNoResult": "Geen resultaat gevonden",
+  "SpotifySearchFailed": "Zoeken en Afspelen mislukt",
+  "SpotifyListenText": "Luisteren naar",
+  "SpotifySearchTypePlaylist": "Speellijst",
+  "SpotifySearchTypeAlbum": "album",
+  "SpotifySearchTypeTrack": "nummer",
+  "SpotifySearchTypeArtist": "artist"
+}

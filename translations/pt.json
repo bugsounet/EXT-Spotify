@@ -1,0 +1,21 @@
+{
+  "LibrespotNoResponse": "Sem resposta do librespot!",
+  "LibrespotConnected": "Conectado a librespot!",
+  "LibrespotConnecting": "Aguarde por favor, a conectar ao librespot...",
+  "LibrespotNoInstalled": "O librespot não está instalado!",
+  "LibrespotError": "Librespot: {VALUES}",
+
+  "RaspotifyNoResponse": "Sem resposta do raspotify!",
+  "RaspotifyConnected": "Conectado a raspotify!",
+  "RaspotifyConnecting": "Por favor aguarde, a conectar ao raspotify...",
+  "RaspotifyNoInstalled": "Raspotify não esta instalado!",
+  "RaspotifyError": "Raspotify: {VALUES}",
+
+  "SpotifyNoResult": "Sem resultados",
+  "SpotifySearchFailed": "Falha na procura",
+  "SpotifyListenText": "A ouvir em",
+  "SpotifySearchTypePlaylist": "playlist",
+  "SpotifySearchTypeAlbum": "album",
+  "SpotifySearchTypeTrack": "faixa",
+  "SpotifySearchTypeArtist": "artista"
+}

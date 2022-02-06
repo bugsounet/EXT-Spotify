@@ -1,0 +1,21 @@
+{
+  "LibrespotNoResponse": "No response from librespot! ({VALUES})",
+  "LibrespotConnected": "Connected to librespot! ({VALUES})",
+  "LibrespotConnecting": "Please wait, connecting to librespot...",
+  "LibrespotNoInstalled": "librespot is not installed !",
+  "LibrespotError": "Librespot: {VALUES}",
+
+  "RaspotifyNoResponse": "No response from raspotify! ({VALUES})",
+  "RaspotifyConnected": "Connected to raspotify! ({VALUES})",
+  "RaspotifyConnecting": "Please wait, connecting to raspotify...",
+  "RaspotifyNoInstalled": "Raspotify is not installed !",
+  "RaspotifyError": "Raspotify: {VALUES}",
+
+  "SpotifyNoResult": "No Result found",
+  "SpotifySearchFailed": "Search and Play failed",
+  "SpotifyListenText": "Listening on",
+  "SpotifySearchTypePlaylist": "playlist",
+  "SpotifySearchTypeAlbum": "album",
+  "SpotifySearchTypeTrack": "track",
+  "SpotifySearchTypeArtist": "artist"
+}
