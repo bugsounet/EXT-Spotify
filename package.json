@@ -1,8 +1,8 @@
 {
   "name": "EXT-Spotify",
-  "version": "0.0.1",
-  "rev": "develop",
-  "description": "An embedded Notification Displayer on MagicMirror.",
+  "version": "1.0.0",
+  "rev": "220206",
+  "description": "An embedded Spotify Player for MagicMirror.",
   "main": "EXT-Spotify.js",
   "scripts": {
     "preinstall": "installer/preinstall.sh",
@@ -11,8 +11,8 @@
   "keywords": [
     "magic mirror",
     "module",
-    "notification",
-    "warning"
+    "player",
+    "spotify"
   ],
   "author": "bugsounet",
   "license": "MIT",
@@ -23,9 +23,9 @@
     "type": "git",
     "url": "https://github.com/bugsounet/EXT-Spotify"
   },
-  "homepage": "http://wiki.bugsounet.fr/en/EXT-Spotify",
+  "homepage": "https://wiki.bugsounet.fr/en/EXT-Spotify",
   "dependencies": {
-    "@bugsounet/spotify": "1.0.2",
+    "@bugsounet/spotify": "^1.1.0",
     "@bugsounet/systemd": "^1.0.0",
     "pm2": "^5.1.2"
   }
