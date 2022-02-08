@@ -72,7 +72,8 @@ Module.register("EXT-Spotify", {
     return [
       "EXT-Spotify.css",
       "https://cdn.materialdesignicons.com/5.2.45/css/materialdesignicons.min.css",
-      "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+      "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css",
+      "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
     ]
   },
 
