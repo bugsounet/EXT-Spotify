@@ -149,7 +149,7 @@ Module.register("EXT-Spotify", {
         if (!this.assistantSpeak) this.sendSocketNotification("SPOTIFY_VOLUME", this.spotify.targetVolume)
         break
       case "EXT_SPOTIFY-PLAY":
-        this.SpotifyCommand("PLAY")
+        this.SpotifyCommand("PLAY", payload)
         break
       case "EXT_SPOTIFY-PAUSE":
         this.SpotifyCommand("PAUSE")
@@ -337,7 +337,7 @@ Module.register("EXT-Spotify", {
   SpotifyCommand: function(command, payload) {
     switch (command) {
       case "PLAY":
-        this.sendSocketNotification("SPOTIFY_PLAY")
+        this.sendSocketNotification("SPOTIFY_PLAY", payload)
         break
       case "PAUSE":
         this.sendSocketNotification("SPOTIFY_PAUSE")
