@@ -7,7 +7,7 @@
   "scripts": {
     "preinstall": "installer/preinstall.sh",
     "postinstall": "installer/postinstall.sh",
-    "update": "installer/update.sh"
+    "update": "installer/update.sh",
     "librespot": "installer/librespot.sh",
     "raspotify": "installer/raspotify.sh"
   },
