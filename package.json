@@ -1,25 +1,25 @@
 {
   "name": "EXT-Spotify",
   "version": "1.0.0",
-  "rev": "220206",
+  "rev": "220304",
   "description": "An embedded Spotify Player for MagicMirror.",
   "main": "EXT-Spotify.js",
   "scripts": {
     "preinstall": "installer/preinstall.sh",
     "postinstall": "installer/postinstall.sh",
+    "update": "installer/update.sh"
     "librespot": "installer/librespot.sh",
     "raspotify": "installer/raspotify.sh"
   },
   "keywords": [
     "magic mirror",
     "module",
-    "player",
     "spotify"
   ],
   "author": "bugsounet",
   "license": "MIT",
   "bugs": {
-    "url": "http://forum.bugsounet.fr"
+    "url": "https://forum.bugsounet.fr"
   },
   "repository": {
     "type": "git",
@@ -27,8 +27,6 @@
   },
   "homepage": "https://wiki.bugsounet.fr/en/EXT-Spotify",
   "dependencies": {
-    "@bugsounet/spotify": "^1.1.0",
-    "@bugsounet/systemd": "^1.0.0",
-    "pm2": "^5.1.2"
+    "@bugsounet/spotify": "^1.1.0"
   }
 }

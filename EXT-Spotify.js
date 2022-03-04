@@ -1,7 +1,7 @@
 /**
  ** Module : EXT-Spotify
  ** @bugsounet
- ** ©01/2022
+ ** ©03/2022
  ** support: https://forum.bugsounet.fr
  **/
 
@@ -18,20 +18,25 @@ Module.register("EXT-Spotify", {
       PATH: "../../../", // Needed Don't modify it !
       TOKEN: "tokenSpotify.json",
       CLIENT_ID: "",
-      CLIENT_SECRET: "",
+      CLIENT_SECRET: ""
     },
     player: {
-      type: "none",
-      email: "",
-      password: "",
-      minVolume: 10,
-      maxVolume: 90,
-      usePause: true
+      minVolume: 30,
+      maxVolume: 100
     }
   },
 
   start: function () {
     if (this.config.debug) logSpotify = (...args) => { console.log("[SPOTIFY]", ...args) }
+
+    /** Search player **/
+    let Librespot = config.modules.find(m => m.module == "EXT-Librespot")
+    let Raspotify = config.modules.find(m => m.module == "EXT-Raspotify")
+    if ((Librespot && !Librespot.disabled) || (Raspotify && !Raspotify.disabled)) {
+      this.config.player.usePlayer = true
+      logSpotify("Player Found!")
+    } else this.config.player.usePlayer = false
+
     this.spotify= {
       connected: false,
       player: false,
@@ -101,12 +106,14 @@ Module.register("EXT-Spotify", {
     }
   },
 
-  notificationReceived: function(noti, payload) {
+  notificationReceived: function(noti, payload, sender) {
     switch(noti) {
       case "DOM_OBJECTS_CREATED":
         this.sendSocketNotification("INIT", this.config)
         if (this.config.visual.useBottomBar) this.Spotify.prepare()
-        this.sendNotification("EXT_HELLO", this.name)
+        break
+      case "GAv4_READY":
+        if (sender.name == "MMM-GoogleAssistant") this.sendNotification("EXT_HELLO", this.name)
         break
       case "ASSISTANT_LISTEN":
       case "ASSISTANT_THINK":
@@ -229,6 +236,9 @@ Module.register("EXT-Spotify", {
           message: this.translate(payload.message, {VALUES: payload.values}),
           icon: "modules/EXT-Spotify/components/Spotify-Logo.png"
         })
+        break
+      case "PLAYER_RECONNECT":
+        this.sendNotification("EXT_PLAYER-SPOTIFY_RECONNECT")
         break
     }
   },
@@ -363,7 +373,7 @@ Module.register("EXT-Spotify", {
         this.sendSocketNotification("SPOTIFY_TRANSFER", payload)
         break
       case "VOLUME":
-        this.notificationReceived("EXT_SPOTIFY_VOLUME_SET", payload)
+        this.notificationReceived("EXT_SPOTIFY-VOLUME_SET", payload)
         break
       case "SEARCH":
         /** enforce type **/
