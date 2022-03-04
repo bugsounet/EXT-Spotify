@@ -3,8 +3,6 @@
 var NodeHelper = require("node_helper")
 var logSpotify = (...args) => { /* do nothing */ }
 
-const pm2 = require("pm2")
-const systemd = require("@bugsounet/systemd")
 const spotify = require("@bugsounet/spotify")
 const path = require("path")
 const fs = require("fs")
