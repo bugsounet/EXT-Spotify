@@ -1,7 +1,7 @@
 #!/bin/bash
-# +-----------------+
-# | npm postinstall |
-# +-----------------+
+# +---------+
+# | Tokens  |
+# +---------+
 
 # get the installer directory
 Installer_get_current_dir () {
@@ -19,15 +19,16 @@ Installer_dir="$(Installer_get_current_dir)"
 # move to installler directory
 cd "$Installer_dir"
 source utils.sh
-
-# Go back to module root
-cd ..
-
-# module name
-Installer_module="$(grep -Eo '\"name\"[^,]*' ./package.json | grep -Eo '[^:]*$' | awk  -F'\"' '{print $2}')"
-
-# the end...
-Installer_warning "Support is now moved in a dedicated Server: https://forum.bugsounet.fr"
-Installer_warning "@bugsounet"
+Installer_info "Welcome to Spotify Token generator!"
 echo
-Installer_success "$Installer_module is now installed !"
+Installer_beep=false
+
+echo
+Installer_yesno "Do you want to install/reinstall Spotify token?" && (
+  rm -f ../tokenSpotify.json
+  node auth_Spotify
+  echo
+)
+
+echo
+Installer_success "Done."

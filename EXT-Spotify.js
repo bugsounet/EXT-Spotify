@@ -10,38 +10,66 @@ logSpotify = (...args) => { /* do nothing */ }
 Module.register("EXT-Spotify", {
   defaults: {
     debug: true,
-    deviceName: "MagicMirror",
-    visual: {
-      updateInterval: 1000,
-      idleInterval: 10000,
-      useBottomBar: false,
-      PATH: "../../../", // Needed Don't modify it !
-      TOKEN: "tokenSpotify.json",
-      CLIENT_ID: "",
-      CLIENT_SECRET: ""
-    },
-    player: {
-      minVolume: 30,
-      maxVolume: 100
-    }
+    updateInterval: 1000,
+    idleInterval: 10000,
+    useBottomBar: false,
+    CLIENT_ID: "",
+    CLIENT_SECRET: ""
   },
 
   start: function () {
     if (this.config.debug) logSpotify = (...args) => { console.log("[SPOTIFY]", ...args) }
-
+    /** make default config **/
+    this.Player= {
+      usePlayer: false,
+      deviceName: "MagicMirror",
+      minVolume: 30,
+      maxVolume: 100
+    }
+    this.Visual = {
+      updateInterval: this.config.updateInterval,
+      idleInterval: this.config.idleInterval,
+      useBottomBar: this.config.useBottomBar,
+      PATH: "../",
+      TOKEN: "tokenSpotify.json",
+      CLIENT_ID: this.config.CLIENT_ID,
+      CLIENT_SECRET: this.config.CLIENT_SECRET
+    }
     /** Search player **/
     let Librespot = config.modules.find(m => m.module == "EXT-Librespot")
     let Raspotify = config.modules.find(m => m.module == "EXT-Raspotify")
     if ((Librespot && !Librespot.disabled) || (Raspotify && !Raspotify.disabled)) {
-      this.config.player.usePlayer = true
+      this.Player.usePlayer = true
       logSpotify("Player Found!")
-    } else this.config.player.usePlayer = false
+      if (Librespot) {
+        try {
+          this.Player.minVolume = Librespot.config.minVolume ? Librespot.config.minVolume : 30
+        } catch (e) { }
+        try {
+          this.Player.maxVolume = Librespot.config.maxVolume ? Librespot.config.maxVolume : 100
+        } catch (e) { }
+        try {
+          this.Player.deviceName = Librespot.config.deviceName ? Librespot.config.deviceName : "MagicMirror"
+        } catch (e) { }
+      }
+      else if (Raspotify) {
+        try {
+          this.Player.minVolume = Raspotify.config.minVolume
+        } catch (e) { }
+        try {
+          this.Player.maxVolume = Raspotify.config.maxVolume
+        } catch (e) { }
+        try {
+          this.Player.deviceName = Raspotify.config.deviceName
+        } catch (e) { }
+      }
+    }
 
     this.spotify= {
       connected: false,
       player: false,
       currentVolume: 0,
-      targetVolume: this.config.player.maxVolume,
+      targetVolume: this.Player.maxVolume,
       repeat: null,
       shuffle: null
     }
@@ -62,8 +90,14 @@ Module.register("EXT-Spotify", {
         }
       }
     }
-    this.config.visual.deviceDisplay = this.translate("SpotifyListenText")
-    this.Spotify = new Spotify(this.config.visual, callbacks, this.config.debug)
+    this.configHelper = {
+      visual: this.Visual,
+      player: this.Player
+    }
+    logSpotify("configHelper:" , this.configHelper)
+    this.configHelper.visual.deviceDisplay = this.translate("SpotifyListenText")
+    this.Spotify = new Spotify(this.configHelper.visual, callbacks, this.config.debug)
+
   },
 
   getScripts: function() {
@@ -97,7 +131,7 @@ Module.register("EXT-Spotify", {
 
   getDom: function() {
     /** Create Spotify **/
-    if (!this.config.visual.useBottomBar) {
+    if (!this.configHelper.visual.useBottomBar) {
       return this.Spotify.prepareMini()
     } else {
       var dom = document.createElement("div")
@@ -109,8 +143,8 @@ Module.register("EXT-Spotify", {
   notificationReceived: function(noti, payload, sender) {
     switch(noti) {
       case "DOM_OBJECTS_CREATED":
-        this.sendSocketNotification("INIT", this.config)
-        if (this.config.visual.useBottomBar) this.Spotify.prepare()
+        this.sendSocketNotification("INIT", this.configHelper)
+        if (this.configHelper.visual.useBottomBar) this.Spotify.prepare()
         break
       case "GAv4_READY":
         if (sender.name == "MMM-GoogleAssistant") this.sendNotification("EXT_HELLO", this.name)
@@ -129,13 +163,13 @@ Module.register("EXT-Spotify", {
         break
       case "EXT_SPOTIFY-VOLUME_MIN":
         if (!this.spotify.player) return
-        if (this.spotify.currentVolume <= this.config.player.minVolume) return
+        if (this.spotify.currentVolume <= this.configHelper.player.minVolume) return
         this.spotify.targetVolume = this.spotify.currentVolume
-        this.sendSocketNotification("SPOTIFY_VOLUME", this.config.player.minVolume)
+        this.sendSocketNotification("SPOTIFY_VOLUME", this.configHelper.player.minVolume)
         break
       case "EXT_SPOTIFY-VOLUME_MAX":
         if (!this.spotify.player) return
-        if (this.spotify.targetVolume <= this.config.player.minVolume) return
+        if (this.spotify.targetVolume <= this.configHelper.player.minVolume) return
         this.sendSocketNotification("SPOTIFY_VOLUME", this.spotify.targetVolume)
         break
       case "EXT_SPOTIFY-VOLUME_SET":
@@ -199,7 +233,7 @@ Module.register("EXT-Spotify", {
           this.spotify.repeat = payload.repeat_state
           this.spotify.shuffle = payload.shuffle_state
 
-          if (payload.device.name == this.config.deviceName) {
+          if (payload.device.name == this.configHelper.player.deviceName) {
             this.spotify.currentVolume = payload.device.volume_percent
             if (!this.spotify.player) {
               this.spotify.player = true
@@ -244,14 +278,14 @@ Module.register("EXT-Spotify", {
   },
 
   resume: function() {
-    if (this.spotify.connected && this.config.visual.useBottomBar) {
+    if (this.spotify.connected && this.configHelper.visual.useBottomBar) {
       this.showSpotify()
       logSpotify("Spotify is resumed.")
     }
   },
 
   suspend: function() {
-    if (this.spotify.connected && this.config.visual.useBottomBar) {
+    if (this.spotify.connected && this.configHelper.visual.useBottomBar) {
       this.hideSpotify()
       logSpotify("Spotify is suspended.")
     }

@@ -3,15 +3,9 @@
 var NodeHelper = require("node_helper")
 var logSpotify = (...args) => { /* do nothing */ }
 
-const spotify = require("@bugsounet/spotify")
+const spotify = require("./components/spotifyLib.js")
 const path = require("path")
 const fs = require("fs")
-
-/**
- * dependencies
- * Librespot: apt-get install libasound2-dev
- *
-**/
 
 module.exports = NodeHelper.create({
   start: function () {
@@ -40,13 +34,13 @@ module.exports = NodeHelper.create({
             }
             if ((code !== 204) && (code !== 202)) {
               if (this.config.player.usePlayer)
-                this.sendSocketNotification("WARNING", { message: "LibrespotNoResponse", values: this.config.deviceName })
+                this.sendSocketNotification("WARNING", { message: "PlayerNoResponse", values: this.config.player.deviceName })
               return console.log("[SPOTIFY:PLAY] RETRY Error", code, error, result)
             }
             else {
               logSpotify("RETRY: DONE_PLAY")
               this.retryPlayerCount = 0
-              if (this.config.player.usePlayer) this.sendSocketNotification("INFORMATION", { message: "LibrespotConnected", values: this.config.deviceName })
+              if (this.config.player.usePlayer) this.sendSocketNotification("INFORMATION", { message: "PlayerConnected", values: this.config.player.deviceName })
             }
           })
         }, 3000)
@@ -60,10 +54,10 @@ module.exports = NodeHelper.create({
             if (this.retryPlayerCount >= 4) return this.retryPlayerCount = 0
             if (this.config.player.usePlayer) {
               console.log("[SPOTIFY] No response from player !")
-              this.sendSocketNotification("INFORMATION", { message: "LibrespotConnecting" })
+              this.sendSocketNotification("INFORMATION", { message: "PlayerConnecting" })
               this.sendSocketNotification("PLAYER_RECONNECT")
               this.timeout= setTimeout(() => {
-                this.socketNotificationReceived("SPOTIFY_TRANSFER", this.config.deviceName)
+                this.socketNotificationReceived("SPOTIFY_TRANSFER", this.config.player.deviceName)
                 this.socketNotificationReceived("SPOTIFY_RETRY_PLAY", payload)
               }, 3000)
             }
@@ -145,7 +139,7 @@ module.exports = NodeHelper.create({
       this.spotify.start()
     } catch (e) {
       let error = "SPOTIFY: tokenSpotify.json file not found !"
-      console.log(error)
+      console.log("Error From library: " + e)
       this.sendSocketNotification("WARNING" , {  message: error })
     }
   },

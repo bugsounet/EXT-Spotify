@@ -1,15 +1,7 @@
 {
-  "LibrespotNoResponse": "Pas de réponse de Librespot! ({VALUES})",
-  "LibrespotConnected": "Connecté à Librespot! ({VALUES})",
-  "LibrespotConnecting": "Patientez, connexion à Librespot...",
-  "LibrespotNoInstalled": "Librespot n'est pas installé!",
-  "LibrespotError": "Librespot: {VALUES}",
-
-  "RaspotifyNoResponse": "Pas de réponse de Raspotify! ({VALUES})",
-  "RaspotifyConnected": "Connecté à Raspotify! ({VALUES})",
-  "RaspotifyConnecting": "Patientez, connexion à Raspotify...",
-  "RaspotifyNoInstalled": "Raspotify n'est pas installé!",
-  "RaspotifyError": "Raspotify: {VALUES}",
+  "PlayerNoResponse": "Pas de réponse du lecteur! ({VALUES})",
+  "PlayerConnected": "Connecté au lecteur! ({VALUES})",
+  "PlayerConnecting": "Patientez, connexion au lecteur...",
 
   "SpotifyNoResult": "La recherche retourne aucun résultat",
   "SpotifySearchFailed": "Erreur lors de la recherche",
