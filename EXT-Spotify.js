@@ -54,13 +54,13 @@ Module.register("EXT-Spotify", {
       }
       else if (Raspotify) {
         try {
-          this.Player.minVolume = Raspotify.config.minVolume
+          this.Player.minVolume = Raspotify.config.minVolume ? Raspotify.config.minVolume : 30
         } catch (e) { }
         try {
-          this.Player.maxVolume = Raspotify.config.maxVolume
+          this.Player.maxVolume = Raspotify.config.maxVolume ? Raspotify.config.maxVolume : 100
         } catch (e) { }
         try {
-          this.Player.deviceName = Raspotify.config.deviceName
+          this.Player.deviceName = Raspotify.config.deviceName ? Raspotify.config.deviceName : "MagicMirror"
         } catch (e) { }
       }
     }
