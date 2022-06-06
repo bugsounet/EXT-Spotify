@@ -5,6 +5,7 @@ class Spotify {
     this.config = Config
     this.debug = debug
     this.spotifyStatus = callbacks.spotifyStatus
+    this.spotifyPlaying = callbacks.spotifyPlaying
     this.currentPlayback = null
     this.connected = false
     this.timer = null
@@ -218,6 +219,7 @@ class Spotify {
 
 
   updatePlaying(isPlaying) {
+    this.spotifyPlaying(isPlaying)
     const s = document.getElementById("EXT_SPOTIFY")
 
     if (isPlaying) {
