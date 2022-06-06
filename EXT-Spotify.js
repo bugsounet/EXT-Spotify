@@ -88,6 +88,9 @@ Module.register("EXT-Spotify", {
           this.sendNotification("EXT_SPOTIFY-PLAYER_DISCONNECTED")
           this.spotify.player = false
         }
+      },
+      "spotifyPlaying": (play) => {
+        this.sendNotification("EXT_SPOTIFY-PLAYING", play)
       }
     }
     this.configHelper = {
