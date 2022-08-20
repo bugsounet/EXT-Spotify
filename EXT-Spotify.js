@@ -1,7 +1,7 @@
 /**
  ** Module : EXT-Spotify
  ** @bugsounet
- ** ©03/2022
+ ** ©08/2022
  ** support: https://forum.bugsounet.fr
  **/
 
@@ -96,9 +96,6 @@ Module.register("EXT-Spotify", {
       },
       "spotifyPlaying": (play) => {
         this.sendNotification("EXT_SPOTIFY-PLAYING", play)
-      },
-      "spotifyTrackID": (id) => {
-        this.sendSocketNotification("SPOTIFY-TRACKID", id)
       }
     }
     this.configHelper = {
@@ -225,6 +222,12 @@ Module.register("EXT-Spotify", {
       case "EXT_SPOTIFY-SEARCH":
         this.SpotifyCommand("SEARCH", payload)
         break
+      case "EXT_SPOTIFY-HIDE":
+        this.HideOrShow(true)
+        break
+      case "EXT_SPOTIFY-SHOW":
+        this.HideOrShow(false)
+        break
     }
   },
 
@@ -233,7 +236,7 @@ Module.register("EXT-Spotify", {
       /** Spotify module **/
       case "SPOTIFY_PLAY":
         this.Spotify.updateCurrentSpotify(payload)
-        if (this.SCL) this.sendNotification("EXT_SPOTIFY-PLAYING", payload) // broadcast all info for EXT-SpotifyCanvasLyrics
+        if (this.SCL) this.sendNotification("EXT_SPOTIFYCL-PLAYING", payload) // broadcast all info for EXT-SpotifyCanvasLyrics
         if (!this.spotify.connected) return // don't check if not connected (use spotify callback)
         if (payload && payload.device && payload.device.name) {
           this.spotify.repeat = payload.repeat_state
@@ -281,6 +284,12 @@ Module.register("EXT-Spotify", {
         this.sendNotification("EXT_PLAYER-SPOTIFY_RECONNECT")
         break
     }
+  },
+
+  HideOrShow: function (hide) {
+    let SpotifyWrapper = document.getElementById("EXT_SPOTIFY")
+    if (hide) SpotifyWrapper.style.display= "none"
+    else SpotifyWrapper.style.display= "block"
   },
 
   /****************************/
