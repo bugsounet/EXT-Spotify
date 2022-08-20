@@ -12,7 +12,6 @@ Module.register("EXT-Spotify", {
     debug: true,
     updateInterval: 1000,
     idleInterval: 10000,
-    useBottomBar: false,
     CLIENT_ID: "",
     CLIENT_SECRET: ""
   },
@@ -29,12 +28,12 @@ Module.register("EXT-Spotify", {
     this.Visual = {
       updateInterval: this.config.updateInterval,
       idleInterval: this.config.idleInterval,
-      useBottomBar: this.config.useBottomBar,
       PATH: "../",
       TOKEN: "tokenSpotify.json",
       CLIENT_ID: this.config.CLIENT_ID,
       CLIENT_SECRET: this.config.CLIENT_SECRET
     }
+    this.SCL = false
     /** Search player **/
     let Librespot = config.modules.find(m => m.module == "EXT-Librespot")
     let Raspotify = config.modules.find(m => m.module == "EXT-Raspotify")
@@ -65,6 +64,12 @@ Module.register("EXT-Spotify", {
       }
     }
 
+    let SpotifyCanvasLyrics = config.modules.find(m => m.module == "EXT-SpotifyCanvasLyrics")
+    if (SpotifyCanvasLyrics && !SpotifyCanvasLyrics.disabled) {
+      this.SCL = true
+      logSpotify("EXT-SpotifyCanvasLyrics Found!")
+    }
+
     this.spotify= {
       connected: false,
       player: false,
@@ -91,6 +96,9 @@ Module.register("EXT-Spotify", {
       },
       "spotifyPlaying": (play) => {
         this.sendNotification("EXT_SPOTIFY-PLAYING", play)
+      },
+      "spotifyTrackID": (id) => {
+        this.sendSocketNotification("SPOTIFY-TRACKID", id)
       }
     }
     this.configHelper = {
@@ -135,20 +143,13 @@ Module.register("EXT-Spotify", {
 
   getDom: function() {
     /** Create Spotify **/
-    if (!this.configHelper.visual.useBottomBar) {
-      return this.Spotify.prepareMini()
-    } else {
-      var dom = document.createElement("div")
-      dom.style.display = 'none'
-      return dom
-    }
+    return this.Spotify.prepareMini()
   },
 
   notificationReceived: function(noti, payload, sender) {
     switch(noti) {
       case "DOM_OBJECTS_CREATED":
         this.sendSocketNotification("INIT", this.configHelper)
-        if (this.configHelper.visual.useBottomBar) this.Spotify.prepare()
         break
       case "GAv4_READY":
         if (sender.name == "MMM-GoogleAssistant") this.sendNotification("EXT_HELLO", this.name)
@@ -232,6 +233,7 @@ Module.register("EXT-Spotify", {
       /** Spotify module **/
       case "SPOTIFY_PLAY":
         this.Spotify.updateCurrentSpotify(payload)
+        if (this.SCL) this.sendNotification("EXT_SPOTIFY-PLAYING", payload) // broadcast all info for EXT-SpotifyCanvasLyrics
         if (!this.spotify.connected) return // don't check if not connected (use spotify callback)
         if (payload && payload.device && payload.device.name) {
           this.spotify.repeat = payload.repeat_state
@@ -279,42 +281,6 @@ Module.register("EXT-Spotify", {
         this.sendNotification("EXT_PLAYER-SPOTIFY_RECONNECT")
         break
     }
-  },
-
-  resume: function() {
-    if (this.spotify.connected && this.configHelper.visual.useBottomBar) {
-      this.showSpotify()
-      logSpotify("Spotify is resumed.")
-    }
-  },
-
-  suspend: function() {
-    if (this.spotify.connected && this.configHelper.visual.useBottomBar) {
-      this.hideSpotify()
-      logSpotify("Spotify is suspended.")
-    }
-  },
-
-  hideSpotify: function() {
-    var spotifyModule = document.getElementById("module_EXT_Spotify")
-    var dom = document.getElementById("EXT_SPOTIFY")
-    this.timer = null
-    clearTimeout(this.timer)
-    dom.classList.remove("bottomIn")
-    dom.classList.add("bottomOut")
-    this.timer = setTimeout(() => {
-      dom.classList.add("inactive")
-      spotifyModule.style.display = "none"
-    }, 500)
-  },
-
-  showSpotify: function() {
-    var spotifyModule = document.getElementById("module_EXT_Spotify")
-    var dom = document.getElementById("EXT_SPOTIFY")
-    spotifyModule.style.display = "block"
-    dom.classList.remove("bottomOut")
-    dom.classList.add("bottomIn")
-    dom.classList.remove("inactive")
   },
 
   /****************************/

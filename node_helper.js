@@ -6,6 +6,7 @@ var logSpotify = (...args) => { /* do nothing */ }
 const spotify = require("./components/spotifyLib.js")
 const path = require("path")
 const fs = require("fs")
+const request = require("request")
 
 module.exports = NodeHelper.create({
   start: function () {
@@ -123,7 +124,6 @@ module.exports = NodeHelper.create({
         logSpotify("Search and Play", payload)
         this.searchAndPlay(payload.query, payload.condition)
         break
-
     }
   },
 
@@ -133,8 +133,9 @@ module.exports = NodeHelper.create({
     logSpotify("Starting Spotify module...")
     try {
       this.spotify = new spotify(this.config.visual,
-        (noti, params) => this.sendSocketNotification(noti, params),
-        this.config.debug
+        (noti, params) => {
+          this.sendSocketNotification(noti, params), this.config.debug
+        }
       )
       this.spotify.start()
     } catch (e) {
@@ -202,6 +203,5 @@ module.exports = NodeHelper.create({
     if (details) console.log("[SPOTIFY][ERROR]" + err, details.message, details)
     else console.log("[SPOTIFY][ERROR]" + err)
     return this.sendSocketNotification("NOT_INITIALIZED", { message: error.message, values: error.values })
-  },
-
+  }
 })

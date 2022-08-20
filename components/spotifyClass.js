@@ -13,31 +13,6 @@ class Spotify {
     console.log("[SPOTIFY] Spotify Class Loaded")
   }
 
-  /** Create a fake module in bottom_bar **/
-  prepare() {
-    var nodes = document.getElementsByClassName("region bottom bar")
-    var pos = nodes[0].querySelector(".container")
-    var children = pos.children
-    var module = document.createElement("div")
-    module.id = "module_EXT_Spotify"
-    module.style.display= "none"
-    module.classList.add("module", "EXT_Spotify")
-    var header = document.createElement("header")
-    header.classList.add("module-header")
-    header.style.display = "none"
-    module.appendChild(header)
-    var content = document.createElement("div")
-    content.classList.add("module-content")
-    var viewDom = document.createElement("div")
-    viewDom.id = "EXT_SPOTIFY"
-    viewDom.classList.add("inactive")
-
-    content.appendChild(viewDom)
-    module.appendChild(content)
-    pos.insertBefore(module, children[children.length])
-    this.getMinimalistBarDom(viewDom)
-  }
-
   /** Create a default display **/
   prepareMini() {
     var viewDom = document.createElement("div")
@@ -69,9 +44,7 @@ class Spotify {
 
   updatePlayback(status) { // hide show rules with animation !
     var dom = document.getElementById("EXT_SPOTIFY")
-    if (this.config.useBottomBar) {
-      var module = document.getElementById("module_EXT_Spotify")
-    }
+
     clearTimeout(this.timer)
     this.timer = null
     if (this.connected && !status) {
@@ -79,23 +52,14 @@ class Spotify {
       this.connected = false
       this.spotifyStatus(false)
 
-      if (this.config.useBottomBar) {
-        dom.classList.remove("bottomIn")
-        dom.classList.add("bottomOut")
-        this.timer = setTimeout(() => {
+      dom.classList.remove("animate__flipInX")
+      dom.classList.add("animate__flipOutX")
+      dom.addEventListener('animationend', (e) => {
+        if (e.animationName == "flipOutX" && e.path[0].id == "EXT_SPOTIFY") {
           dom.classList.add("inactive")
-          module.style.display = "none"
-        }, 500)
-      } else {
-        dom.classList.remove("animate__flipInX")
-        dom.classList.add("animate__flipOutX")
-        dom.addEventListener('animationend', (e) => {
-          if (e.animationName == "flipOutX" && e.path[0].id == "EXT_SPOTIFY") {
-            dom.classList.add("inactive")
-          }
-          e.stopPropagation()
-        }, {once: true})
-      }
+        }
+        e.stopPropagation()
+      }, {once: true})
     }
     if (!this.connected && status) {
       if (this.debug) console.log("[SPOTIFY] Connected")
@@ -103,14 +67,10 @@ class Spotify {
       this.spotifyStatus(true)
 
       dom.classList.remove("inactive")
-      if (this.config.useBottomBar) {
-        module.style.display = "block"
-        dom.classList.remove("bottomOut")
-        dom.classList.add("bottomIn")
-      } else {
-        dom.classList.remove("animate__flipOutX")
-        dom.classList.add("animate__flipInX")
-      }
+
+      dom.classList.remove("animate__flipOutX")
+      dom.classList.add("animate__flipInX")
+
     }
   }
 
@@ -184,10 +144,6 @@ class Spotify {
 
     if (bar.max != durationMS) bar.max = durationMS
 
-    if (this.config.useBottomBar) {
-      const current = document.getElementById("EXT_SPOTIFY_PROGRESS_COMBINED")
-      current.innerText = this.msToTime(progressMS) + ' / ' + this.msToTime(durationMS)
-    }
   }
 
   updateDevice(device) {
@@ -230,14 +186,6 @@ class Spotify {
       s.classList.remove("playing")
     }
 
-    if (this.config.useBottomBar) {
-      const p = document.getElementById("EXT_SPOTIFY_CONTROL_PLAY")
-      p.className = isPlaying ? "playing" : "pausing"
-      const icon = isPlaying ? "mdi:play-circle-outline" : "mdi:pause-circle-outline"
-      p.innerHTML = ""
-      p.appendChild(this.getIconContainer('iconify', "EXT_SPOTIFY_CONTROL_PLAY_ICON", icon)
-      )
-    }
   }
 
   updateSongInfo(playbackItem) {
@@ -246,7 +194,7 @@ class Spotify {
     const sDom = document.getElementById("EXT_SPOTIFY")
 
     const cover_img = document.getElementById("EXT_SPOTIFY_COVER_IMAGE")
-    let img_index = this.config.useBottomBar ? 2 : 1  
+    let img_index = 1
 
     var img_url
     var display_name
@@ -260,13 +208,13 @@ class Spotify {
     }
 
     if (img_url !== cover_img.src) {
-      if (!this.config.useBottomBar) {
-        const back = document.getElementById("EXT_SPOTIFY_BACKGROUND")
-        back.classList.remove('fade-in')
-        let backOffSet = cover_img.offsetWidth
-        back.classList.add('fade-in')
-        back.style.backgroundImage = `url(${img_url})`
-      }
+
+      const back = document.getElementById("EXT_SPOTIFY_BACKGROUND")
+      back.classList.remove('fade-in')
+      let backOffSet = cover_img.offsetWidth
+      back.classList.add('fade-in')
+      back.style.backgroundImage = `url(${img_url})`
+
       cover_img.classList.remove('fade-in')
       let offset = cover_img.offsetWidth
       cover_img.classList.add('fade-in')
@@ -276,10 +224,8 @@ class Spotify {
     const title = document.querySelector("#EXT_SPOTIFY_TITLE .text")
     title.textContent = playbackItem.name
 
-    if (!this.config.useBottomBar) {
-      const album = document.querySelector("#EXT_SPOTIFY_ALBUM .text")
-      album.textContent = display_name
-    }
+    const album = document.querySelector("#EXT_SPOTIFY_ALBUM .text")
+    album.textContent = display_name
 
     const artist = document.querySelector("#EXT_SPOTIFY_ARTIST .text")
     const artists = playbackItem.artists
@@ -451,59 +397,6 @@ class Spotify {
     const cover = this.getHTMLElementWithID('div', "EXT_SPOTIFY_COVER")
     cover.appendChild(cover_img)
     return cover
-  }
-
-  getMinimalistBarDom(container) {
-    container.appendChild(this.getProgressContainer())
-
-    const misc = this.getHTMLElementWithID('div', "EXT_SPOTIFY_MISC")
-    misc.appendChild(this.getDeviceContainer())
-
-    const info = this.getHTMLElementWithID('div', "EXT_SPOTIFY_INFO")
-
-    const infoElements = [
-      "EXT_SPOTIFY_TITLE",
-      "EXT_SPOTIFY_ARTIST"
-    ]
-
-    infoElements.forEach((key, index) => {
-      if (index > 0) {
-        const bulletElement = this.getHTMLElementWithID("span", "TEXT_BULLET")
-        bulletElement.innerHTML = "&#8226;"
-        info.appendChild(bulletElement)
-      }
-      const element = this.getHTMLElementWithID('div', key)
-      element.appendChild(this.getEmptyTextHTMLElement())
-      info.appendChild(element)
-    })
-
-    misc.appendChild(info)
-
-    const infoFooter = this.getHTMLElementWithID('div', "EXT_SPOTIFY_INFO_FOOTER")
-    infoFooter.appendChild(this.getVolumeContainer())
-
-    infoFooter.appendChild(this.getSpotifyLogoContainer())
-
-    const totalTime = this.getHTMLElementWithID('div', "EXT_SPOTIFY_PROGRESS_COMBINED")
-    totalTime.className = 'text'
-    totalTime.innerText = "--:-- / --:--"
-
-    infoFooter.appendChild(totalTime)
-
-    misc.appendChild(infoFooter)
-
-    const foreground = this.getHTMLElementWithID('div', "EXT_SPOTIFY_FOREGROUND")
-    foreground.appendChild(this.getCoverContainer())
-    foreground.appendChild(misc)
-
-    foreground.appendChild(
-      this.getControlButton(
-        "EXT_SPOTIFY_CONTROL_PLAY",
-        'mdi:play-circle-outline'
-      ),
-    )
-    container.appendChild(foreground)
-    return container
   }
 
   getConnected() {
