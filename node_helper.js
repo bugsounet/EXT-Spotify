@@ -6,6 +6,7 @@ var logSpotify = (...args) => { /* do nothing */ }
 const spotify = require("./components/spotifyLib.js")
 const path = require("path")
 const fs = require("fs")
+const request = require("request")
 
 module.exports = NodeHelper.create({
   start: function () {
@@ -119,11 +120,16 @@ module.exports = NodeHelper.create({
           else logSpotify("DONE_REPEAT")
         })
         break
+      case "SPOTIFY_SEEK":
+        this.spotify.seek(payload, (code, error, result) => {
+          if ((code !== 204) && (code !== 202)) console.log("[SPOTIFY:SEEK] Error", code, result)
+          else logSpotify("DONE_SEEK", payload)
+        })
+        break
       case "SEARCH_AND_PLAY":
         logSpotify("Search and Play", payload)
         this.searchAndPlay(payload.query, payload.condition)
         break
-
     }
   },
 
@@ -133,8 +139,9 @@ module.exports = NodeHelper.create({
     logSpotify("Starting Spotify module...")
     try {
       this.spotify = new spotify(this.config.visual,
-        (noti, params) => this.sendSocketNotification(noti, params),
-        this.config.debug
+        (noti, params) => {
+          this.sendSocketNotification(noti, params), this.config.debug
+        }
       )
       this.spotify.start()
     } catch (e) {
@@ -202,6 +209,5 @@ module.exports = NodeHelper.create({
     if (details) console.log("[SPOTIFY][ERROR]" + err, details.message, details)
     else console.log("[SPOTIFY][ERROR]" + err)
     return this.sendSocketNotification("NOT_INITIALIZED", { message: error.message, values: error.values })
-  },
-
+  }
 })
