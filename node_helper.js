@@ -120,6 +120,12 @@ module.exports = NodeHelper.create({
           else logSpotify("DONE_REPEAT")
         })
         break
+      case "SPOTIFY_SEEK":
+        this.spotify.seek(payload, (code, error, result) => {
+          if ((code !== 204) && (code !== 202)) console.log("[SPOTIFY:SEEK] Error", code, result)
+          else logSpotify("DONE_SEEK", payload)
+        })
+        break
       case "SEARCH_AND_PLAY":
         logSpotify("Search and Play", payload)
         this.searchAndPlay(payload.query, payload.condition)

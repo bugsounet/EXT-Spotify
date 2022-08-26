@@ -2,7 +2,7 @@
 // Spotify library
 // Developers : Seongnoh Sean Yi (eouia0819@gmail.com)
 //              bugsounet (bugsounet@bugsounet.fr)
-// v1.1.0: 12/03/2022
+// v1.1.1: 26/08/2022
 
 const fs = require("fs")
 const path = require("path")
@@ -213,16 +213,17 @@ class Spotify {
   }
 
   next(cb) {
-    this.doRequest("/v1/me/player/next", "POST", null, null, (code, error, body) => {
-      this.doRequest("/v1/me/player/seek", "PUT", { position_ms: 0 }, null, cb)
-    })
-
+    this.doRequest("/v1/me/player/next", "POST", null, null, cb)
   }
 
   previous(cb) {
     this.doRequest("/v1/me/player/seek", "PUT", { position_ms: 0 }, null, (code, error, body) => {
       this.doRequest("/v1/me/player/previous", "POST", null, null, cb)
     })
+  }
+
+  seek(position,cb) {
+    this.doRequest("/v1/me/player/seek", "PUT", { position_ms: position }, null, cb)
   }
 
   search(param, cb) {

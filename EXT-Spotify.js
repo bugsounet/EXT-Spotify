@@ -34,6 +34,7 @@ Module.register("EXT-Spotify", {
       CLIENT_SECRET: this.config.CLIENT_SECRET
     }
     this.SCL = false
+    this.SPOTIFYCL = false
     /** Search player **/
     let Librespot = config.modules.find(m => m.module == "EXT-Librespot")
     let Raspotify = config.modules.find(m => m.module == "EXT-Raspotify")
@@ -63,7 +64,7 @@ Module.register("EXT-Spotify", {
         } catch (e) { }
       }
     }
-
+    /** Search SpotifyCanvasLyrics **/
     let SpotifyCanvasLyrics = config.modules.find(m => m.module == "EXT-SpotifyCanvasLyrics")
     if (SpotifyCanvasLyrics && !SpotifyCanvasLyrics.disabled) {
       this.SCL = true
@@ -90,6 +91,10 @@ Module.register("EXT-Spotify", {
           this.sendNotification("EXT_SPOTIFY-DISCONNECTED")
           this.spotify.connected = false
           logSpotify("spotifyStatus: PLAYER Disconnected")
+          if (this.SCL) {
+            this.SPOTIFYCL = false
+            this.HideOrShow(false)
+          }
           this.sendNotification("EXT_SPOTIFY-PLAYER_DISCONNECTED")
           this.spotify.player = false
         }
@@ -222,11 +227,8 @@ Module.register("EXT-Spotify", {
       case "EXT_SPOTIFY-SEARCH":
         this.SpotifyCommand("SEARCH", payload)
         break
-      case "EXT_SPOTIFY-HIDE":
-        this.HideOrShow(true)
-        break
-      case "EXT_SPOTIFY-SHOW":
-        this.HideOrShow(false)
+      case "EXT_SPOTIFY-SEEK":
+        this.SpotifyCommand("SEEK", payload)
         break
     }
   },
@@ -236,7 +238,11 @@ Module.register("EXT-Spotify", {
       /** Spotify module **/
       case "SPOTIFY_PLAY":
         this.Spotify.updateCurrentSpotify(payload)
-        if (this.SCL) this.sendNotification("EXT_SPOTIFYCL-PLAYING", payload) // broadcast all info for EXT-SpotifyCanvasLyrics
+        if (this.SCL && payload.device && payload.device.name == this.Player.deviceName) {
+          this.sendNotification("EXT_SPOTIFYCL-PLAYING", payload)
+          this.HideOrShow(true)
+          this.SPOTIFYCL = true
+        } else this.Spotify.updateCurrentSpotify(payload)
         if (!this.spotify.connected) return // don't check if not connected (use spotify callback)
         if (payload && payload.device && payload.device.name) {
           this.spotify.repeat = payload.repeat_state
@@ -247,6 +253,10 @@ Module.register("EXT-Spotify", {
             if (!this.spotify.player) {
               this.spotify.player = true
               logSpotify("SPOTIFY_PLAY: PLAYER Connected")
+              if (this.SCL) {
+                this.HideOrShow(true)
+                this.SPOTIFYCL = true
+              }
               this.sendNotification("EXT_SPOTIFY-PLAYER_CONNECTED")
             }
           }
@@ -254,6 +264,10 @@ Module.register("EXT-Spotify", {
             if (this.spotify.player) {
               this.spotify.player = false
               logSpotify("SPOTIFY_PLAY: PLAYER Disconnected")
+              if (this.SCL) {
+                this.SPOTIFYCL = false
+                this.HideOrShow(false)
+              }
               this.sendNotification("EXT_SPOTIFY-PLAYER_DISCONNECTED")
             }
           }
@@ -287,9 +301,33 @@ Module.register("EXT-Spotify", {
   },
 
   HideOrShow: function (hide) {
+    if (this.SPOTIFYCL) return
     let SpotifyWrapper = document.getElementById("EXT_SPOTIFY")
-    if (hide) SpotifyWrapper.style.display= "none"
-    else SpotifyWrapper.style.display= "block"
+    let SpotifyCLWrapper = document.getElementById("EXT_SPOTIFYCL")
+    if (hide) {
+      SpotifyWrapper.style.display= "none"
+      MM.getModules().exceptModule(this).enumerate((module) => {
+        module.hide(200, {lockString: "EXT-SPOTIFY_LOCKED"})
+      })
+      SpotifyCLWrapper.classList.remove("animate__backOutRight")
+      SpotifyCLWrapper.style.animationFillMode = "inherit"
+      SpotifyCLWrapper.classList.add("animate__backInLeft")
+      SpotifyCLWrapper.style.display= "block"
+    }
+    else {
+      SpotifyCLWrapper.classList.remove("animate__backInLeft")
+      SpotifyCLWrapper.style.animationFillMode = "both"
+      SpotifyCLWrapper.classList.add("animate__backOutRight")
+      SpotifyCLWrapper.addEventListener('animationend', (e) => {
+        if (e.animationName == "backOutRight" && e.path[0].id == "EXT_SPOTIFYCL") {
+          MM.getModules().enumerate((module)=> {
+            module.show(200, {lockString: "EXT-SPOTIFY_LOCKED"})
+          })
+          SpotifyCLWrapper.style.display= "none"
+          SpotifyWrapper.style.display= "block"
+        }
+      }, {once: true})
+    }
   },
 
   /****************************/
@@ -380,13 +418,20 @@ Module.register("EXT-Spotify", {
         this.sendSocketNotification("SPOTIFY_SHUFFLE", !this.spotify.shuffle)
         break
       case "REPEAT":
-        this.sendSocketNotification("SPOTIFY_REPEAT", (this.spotify.repeat == "off" ? "track" : "off"))
+        let nextRepeatState
+        if (this.spotify.repeat == "off") nextRepeatState = "context"
+        if (this.spotify.repeat == "context") nextRepeatState = "track"
+        if (this.spotify.repeat == "track") nextRepeatState = "off"
+        this.sendSocketNotification("SPOTIFY_REPEAT", nextRepeatState)
         break
       case "TRANSFER":
         this.sendSocketNotification("SPOTIFY_TRANSFER", payload)
         break
       case "VOLUME":
         this.notificationReceived("EXT_SPOTIFY-VOLUME_SET", payload)
+        break
+      case "SEEK":
+        this.sendSocketNotification("SPOTIFY_SEEK", payload)
         break
       case "SEARCH":
         /** enforce type **/

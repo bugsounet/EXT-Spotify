@@ -70,7 +70,6 @@ class Spotify {
 
       dom.classList.remove("animate__flipOutX")
       dom.classList.add("animate__flipInX")
-
     }
   }
 
@@ -173,7 +172,6 @@ class Spotify {
     return this.getFAIconClass(iconClass)
   }
 
-
   updatePlaying(isPlaying) {
     this.spotifyPlaying(isPlaying)
     const s = document.getElementById("EXT_SPOTIFY")
@@ -185,7 +183,6 @@ class Spotify {
       s.classList.add("pausing")
       s.classList.remove("playing")
     }
-
   }
 
   updateSongInfo(playbackItem) {
