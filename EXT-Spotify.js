@@ -305,8 +305,7 @@ Module.register("EXT-Spotify", {
     let SpotifyWrapper = document.getElementById("EXT_SPOTIFY")
     let SpotifyCLWrapper = document.getElementById("EXT_SPOTIFYCL")
     if (hide) {
-      SpotifyWrapper.style.display= "none"
-      MM.getModules().exceptModule(this).enumerate((module) => {
+      MM.getModules().enumerate((module) => {
         module.hide(200, {lockString: "EXT-SPOTIFY_LOCKED"})
       })
       SpotifyCLWrapper.classList.remove("animate__backOutRight")
@@ -324,7 +323,6 @@ Module.register("EXT-Spotify", {
             module.show(200, {lockString: "EXT-SPOTIFY_LOCKED"})
           })
           SpotifyCLWrapper.style.display= "none"
-          SpotifyWrapper.style.display= "block"
         }
       }, {once: true})
     }
