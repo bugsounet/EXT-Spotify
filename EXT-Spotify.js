@@ -104,7 +104,7 @@ Module.register("EXT-Spotify", {
         this.sendNotification("EXT_SPOTIFY-PLAYING", play)
       },
       "spotifyForceSCL": () => {
-        this.ForceSCL = true
+        if (this.SCL) this.ForceSCL = true
       }
     }
     this.configHelper = {
@@ -236,6 +236,7 @@ Module.register("EXT-Spotify", {
         this.SpotifyCommand("SEEK", payload)
         break
       case "EXT_SPOTIFY-SCL":
+        if (!this.SCL) return
         this.ForceSCL = payload
         if (this.ForceSCL) {
           this.HideOrShow(true)
