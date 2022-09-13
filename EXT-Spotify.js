@@ -35,6 +35,7 @@ Module.register("EXT-Spotify", {
     }
     this.SCL = false
     this.SPOTIFYCL = false
+    this.ForceSCL = false
     /** Search player **/
     let Librespot = config.modules.find(m => m.module == "EXT-Librespot")
     let Raspotify = config.modules.find(m => m.module == "EXT-Raspotify")
@@ -101,16 +102,20 @@ Module.register("EXT-Spotify", {
       },
       "spotifyPlaying": (play) => {
         this.sendNotification("EXT_SPOTIFY-PLAYING", play)
+      },
+      "spotifyForceSCL": () => {
+        this.ForceSCL = true
       }
     }
     this.configHelper = {
       visual: this.Visual,
-      player: this.Player
+      player: this.Player,
+      SCL: this.SCL,
+      debug: this.config.debug
     }
     logSpotify("configHelper:" , this.configHelper)
     this.configHelper.visual.deviceDisplay = this.translate("SpotifyListenText")
     this.Spotify = new Spotify(this.configHelper.visual, callbacks, this.config.debug)
-
   },
 
   getScripts: function() {
@@ -230,6 +235,16 @@ Module.register("EXT-Spotify", {
       case "EXT_SPOTIFY-SEEK":
         this.SpotifyCommand("SEEK", payload)
         break
+      case "EXT_SPOTIFY-SCL":
+        this.ForceSCL = payload
+        if (this.ForceSCL) {
+          this.HideOrShow(true)
+          this.SPOTIFYCL = true
+        } else {
+		  this.SPOTIFYCL = false
+		  this.HideOrShow(false)
+		}
+        break
     }
   },
 
@@ -238,7 +253,7 @@ Module.register("EXT-Spotify", {
       /** Spotify module **/
       case "SPOTIFY_PLAY":
         this.Spotify.updateCurrentSpotify(payload)
-        if (this.SCL && payload.device && payload.device.name == this.Player.deviceName) {
+        if (this.SCL && (this.ForceSCL || (payload.device && payload.device.name == this.Player.deviceName))) {
           this.sendNotification("EXT_SPOTIFYCL-PLAYING", payload)
           this.HideOrShow(true)
           this.SPOTIFYCL = true
@@ -272,6 +287,9 @@ Module.register("EXT-Spotify", {
             }
           }
         }
+        break
+      case "SPOTIFY_DEVICELIST":
+        this.sendNotification("EXT_SPOTIFYCL-DEVICELIST", payload)
         break
       case "SPOTIFY_IDLE":
         this.Spotify.updatePlayback(false)

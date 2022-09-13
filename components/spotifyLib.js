@@ -15,8 +15,7 @@ const moment = require("moment")
 var _Debug = (...args) => { /* do nothing */ }
 
 class Spotify {
-  constructor(config, callback, debug = false, first = false) {
-    this.version = "v1.1.0"
+  constructor(config, callback, debug = false, first = false, SCL = false) {
     this.notification = callback
     this.default = {
       CLIENT_ID: "",
@@ -34,6 +33,7 @@ class Spotify {
     this.timer = null
     this.token = null
     this.setup = first
+    this.SCL = SCL
     this.config = Object.assign({}, this.default, config)
     if (debug) _Debug = (...args) => { console.log("[SPOTIFY]", ...args) }
 
@@ -43,7 +43,7 @@ class Spotify {
       ).toString('base64')
     )
     this.initFromToken()
-    _Debug("Spotify v" + this.version + " Initialized...")
+    _Debug("Spotify library Initialized...")
   }
 
   async pulse() {
@@ -64,6 +64,12 @@ class Spotify {
   start() {
     _Debug("Started...")
     this.pulse()
+    if (this.SCL) {
+      this.updateDeviceList()
+      setInterval(() => {
+        this.updateDeviceList()
+      }, 1000*10)
+    }
   }
     
   stop() {
@@ -72,6 +78,17 @@ class Spotify {
     clearTimeout(this.retryTimer)
     this.retryTimer = null
     _Debug("Stop")
+  }
+
+  updateDeviceList() {
+    this.getDevices((code, error, result) => {
+      if (result === "undefined" || code !== 200) {
+        console.log("[SPOTIFY:DEVICE LIST] Error", code, result)
+      } else {
+        _Debug("[DEVICE LIST]", result)
+        this.notification("SPOTIFY_DEVICELIST", result)
+      }
+    })
   }
     
   updateSpotify(spotify) {

@@ -140,8 +140,8 @@ module.exports = NodeHelper.create({
     try {
       this.spotify = new spotify(this.config.visual,
         (noti, params) => {
-          this.sendSocketNotification(noti, params), this.config.debug
-        }
+          this.sendSocketNotification(noti, params)
+        }, this.config.debug, false, this.config.SCL
       )
       this.spotify.start()
     } catch (e) {
