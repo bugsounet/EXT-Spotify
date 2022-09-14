@@ -242,8 +242,8 @@ Module.register("EXT-Spotify", {
           this.HideOrShow(true)
           this.SPOTIFYCL = true
         } else {
-		  this.SPOTIFYCL = false
-		  this.HideOrShow(false)
+          this.SPOTIFYCL = false
+          this.HideOrShow(false)
 		}
         break
     }
