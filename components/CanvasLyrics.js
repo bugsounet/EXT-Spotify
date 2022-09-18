@@ -265,8 +265,8 @@ class CanvasLyrics {
   }
 
   updateDevicesList(devices) {
-	const buttonSpeaker = document.querySelector("#EXT_SPOTIFYCL_SPEAKERICON")
-	let createList = [
+    const buttonSpeaker = document.querySelector("#EXT_SPOTIFYCL_SPEAKERICON")
+    let createList = [
       {
         id: "0",
         title: "Select a device:"
@@ -281,21 +281,21 @@ class CanvasLyrics {
       },
     ]
 
-	let item = {}
-	this.devicesPanel.removeItems(this.devicesPanel.getAllIDS())
-	createList.forEach((item,id) => {
+    let item = {}
+    this.devicesPanel.removeItems(this.devicesPanel.getAllIDS())
+    createList.forEach((item,id) => {
       if (id == "2") {
         if (!devices.length) this.devicesPanel.addItem(item)
       } else {
         this.devicesPanel.addItem(item)
       }
-	})
-	devices.forEach((device,id) => {
+    })
+    devices.forEach((device,id) => {
       item = {
         id: id+2,
         title: device.name,
         fontawesome_icon: this.getFAIcon(device.type),
-        onclick: () => this.command("TRANSFER", device.name) // todo by id
+        onclick: () => this.command("TRANSFERID", device.id)
       }
       if (!device.is_active) this.devicesPanel.addItem(item)
     })

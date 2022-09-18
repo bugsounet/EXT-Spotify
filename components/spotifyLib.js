@@ -263,6 +263,10 @@ class Spotify {
     })
   }
 
+  transferById(device, cb) {
+    this.transfer({ device_ids: [device] }, cb)
+  }
+
   volume(volume = 50, cb) {
     this.doRequest("/v1/me/player/volume", "PUT", { volume_percent: volume }, null, cb)
   }

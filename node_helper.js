@@ -93,7 +93,13 @@ module.exports = NodeHelper.create({
       case "SPOTIFY_TRANSFER":
         this.spotify.transferByName(payload, (code, error, result) => {
           if ((code !== 204) && (code !== 202)) console.log("[SPOTIFY:TRANSFER] Error", code, result)
-          else logSpotify("DONE_TRANSFER")
+          else logSpotify("DONE_TRANSFER", payload)
+        })
+        break
+      case "SPOTIFY_TRANSFER_BYID":
+        this.spotify.transferById(payload, (code, error, result) => {
+          if ((code !== 204) && (code !== 202)) console.log("[SPOTIFY:TRANSFERID] Error", code, result)
+          else logSpotify("DONE_TRANSFERID", payload)
         })
         break
       case "SPOTIFY_STOP":

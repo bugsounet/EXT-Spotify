@@ -131,8 +131,8 @@ Module.register("EXT-Spotify", {
           case "SHUFFLE":
             this.SpotifyCommand("SHUFFLE")
             break
-          case "TRANSFER":
-            this.SpotifyCommand("TRANSFER", param)
+          case "TRANSFERID":
+            this.sendSocketNotification("SPOTIFY_TRANSFER_BYID", param)
             break
           case "VOLUME":
             if (isNaN(param)) {
@@ -426,12 +426,14 @@ Module.register("EXT-Spotify", {
       command: "spotify",
       description: "Spotify commands",
       callback: "tbSpotify"
-    }),
-    commander.add({
-      command: "lyrics",
-      description: "Spotify Canvas Lyrics",
-      callback: "tbSCL"
     })
+    if (this.SCL) {
+      commander.add({
+        command: "lyrics",
+        description: "Spotify Canvas Lyrics",
+        callback: "tbSCL"
+      })
+    }
   },
 
   tbSpotify: function(command, handler) {
@@ -493,14 +495,14 @@ Module.register("EXT-Spotify", {
       var params = handler.args.split(" ")
       if (args[0] == "on") {
         handler.reply("TEXT", "Turn on Lyrics")
-        this.sendNotification("EXT_SPOTIFY-SCL", true)
+        this.notificationReceived("EXT_SPOTIFY-SCL", true)
       }
       else if (args[0] == "off") {
         handler.reply("TEXT", "Turn off Lyrics")
-        this.sendNotification("EXT_SPOTIFY-SCL", false)
+        this.notificationReceived("EXT_SPOTIFY-SCL", false)
       }
       else {
-		handler.reply("TEXT", "I don't know... Try /lyrics",{parse_mode:'Markdown'})
+        handler.reply("TEXT", "I don't know... Try /lyrics",{parse_mode:'Markdown'})
       }
     } else {
       handler.reply("TEXT", 'Need Help for /lyrics commands ?\n\n\
