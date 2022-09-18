@@ -173,8 +173,7 @@ Module.register("EXT-Spotify", {
       visual: this.Visual,
       player: this.Player,
       SCL: this.SCL,
-      debug: this.config.debug,
-      noCanvas: this.config.noCanvas
+      debug: this.config.debug
     }
     this.configClass = {
       debug: this.config.debug,

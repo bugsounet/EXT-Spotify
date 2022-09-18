@@ -243,9 +243,21 @@ module.exports = NodeHelper.create({
         (error, response, body) => {
           if (error) {
             this.SpotifyCurrentID = null
+            if (error.code === "ECONNREFUSED") {
+              this.CLTimeout = setTimeout(() => {
+                canvas()
+                lyrics()
+                this.CLRetry++
+              }, 1000)
+              if (this.CLRetry == 5) {
+                clearTimeout(this.CLTimeout)
+                this.sendSocketNotification("WARNING" , { message: "No Response from EXT-SpotifyCanvasLyrics server" })
+              }
+            }
             return console.error("[SPOTIFYCL] Canvas API return", error.code)
           }
           if (body) {
+            this.CLRetry = 0
             this.sendSocketNotification("CANVAS", body)
             logSpotify("Canvas:", body)
           } else console.error("[SPOTIFYCL] Canvas API return no body ?")
@@ -262,21 +274,9 @@ module.exports = NodeHelper.create({
         (error, response, body) => {
           if (error) {
             this.SpotifyCurrentID = null
-            if (error.code === "ECONNREFUSED") {
-              this.CLTimeout = setTimeout(() => {
-                if (!this.config.noCanvas) canvas()
-                lyrics()
-                this.CLRetry++
-              }, 1000)
-              if (this.CLRetry == 5) {
-                clearTimeout(this.CLTimeout)
-                this.sendSocketNotification("WARNING" , { message: "No Response from EXT-SpotifyCanvasLyrics server" })
-              }
-            }
             return console.error("[SPOTIFYCL] Lyrics API return", error.code)
           }
           if (body) {
-            this.CLRetry = 0
             this.sendSocketNotification("LYRICS", body)
             logSpotify("Lyrics:", body)
           }
@@ -284,7 +284,7 @@ module.exports = NodeHelper.create({
         }
       )
     }
-    if (!this.config.noCanvas) canvas()
+    canvas()
     lyrics()
   }
 })
