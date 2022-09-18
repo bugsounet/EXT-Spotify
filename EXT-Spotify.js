@@ -1,7 +1,7 @@
 /**
  ** Module : EXT-Spotify
  ** @bugsounet
- ** ©08/2022
+ ** ©09/2022
  ** support: https://forum.bugsounet.fr
  **/
 
@@ -12,6 +12,7 @@ Module.register("EXT-Spotify", {
     debug: true,
     mini: true,
     forceSCL: false,
+    noCanvas: true, // force for testing
     updateInterval: 1000,
     CLIENT_ID: "",
     CLIENT_SECRET: ""
@@ -172,16 +173,18 @@ Module.register("EXT-Spotify", {
       visual: this.Visual,
       player: this.Player,
       SCL: this.SCL,
-      debug: this.config.debug
+      debug: this.config.debug,
+      noCanvas: this.config.noCanvas
     }
     this.configClass = {
       debug: this.config.debug,
       deviceDisplay: this.translate("SpotifyListenText"),
-      mini: this.config.mini
+      mini: this.config.mini,
+      noCanvas: this.config.noCanvas
     }
     logSpotify("configHelper:" , this.configHelper)
     this.Spotify = new Spotify(this.configClass, callbacks)
-    if (this.SCL) this.CanvasLyrics = new CanvasLyrics(callbacks, this.Player)
+    if (this.SCL) this.CanvasLyrics = new CanvasLyrics(this.configClass, callbacks, this.Player)
   },
 
   getScripts: function() {

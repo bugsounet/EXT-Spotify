@@ -2,7 +2,7 @@
 // Spotify library
 // Developers : Seongnoh Sean Yi (eouia0819@gmail.com)
 //              bugsounet (bugsounet@bugsounet.fr)
-// v1.1.1: 26/08/2022
+// v1.2.0: 26/09/2022
 
 const fs = require("fs")
 const path = require("path")

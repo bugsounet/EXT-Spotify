@@ -1,8 +1,9 @@
-/* CanvasLyrics class rev: 220820 */
+/* CanvasLyrics class rev: 220918 */
 
 class CanvasLyrics {
-  constructor (callbacks, player) {
+  constructor (config, callbacks, player) {
     this.vertical = false
+    this.config = config
     this.init = callbacks.init
     this.searchCL = callbacks.searchCL
     this.closeDisplay = callbacks.closeDisplay
@@ -256,7 +257,7 @@ class CanvasLyrics {
         },
         {
           id: "2",
-          title: "No device"
+          title: "No devices"
         }
       ]
     })
@@ -375,6 +376,13 @@ class CanvasLyrics {
   displayCanvas(result) {
     const canvas = document.getElementById("EXT_SPOTIFYCL_CANVAS")
     const back = document.getElementById("EXT_SPOTIFYCL_BACKGROUND")
+    if (this.config.noCanvas) {
+      if (this.vertical) {
+        canvas.classList.add("hidden")
+        back.classList.remove("hidden")
+      }
+      return
+    }
     if (result.success == "false" || (result.canvas_url.endsWith("jpg"))) {
       if (this.vertical) {
         canvas.classList.add("hidden")
