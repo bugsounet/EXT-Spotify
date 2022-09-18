@@ -26,8 +26,7 @@ class Spotify {
       SCOPE: "user-read-private app-remote-control playlist-read-private streaming user-read-playback-state user-modify-playback-state",
       TOKEN: "./token.json",
       PATH: "../",
-      updateInterval: 1000,
-      idleInterval: 10000,
+      updateInterval: 1000
     }
     this.retryTimer = null
     this.timer = null
@@ -52,24 +51,17 @@ class Spotify {
       let result = await this.updateSpotify(this.config)
       this.notification("SPOTIFY_PLAY", result)
     } catch (e) {
-      idle = true
       if (e) console.log("[SPOTIFY:ERROR]", e)
       this.notification("SPOTIFY_IDLE")
     }
     this.timer = setTimeout(() => {
       this.pulse()
-    }, idle ? this.config.idleInterval : this.config.updateInterval)
+    }, this.config.updateInterval)
   }
 
   start() {
     _Debug("Started...")
     this.pulse()
-    if (this.SCL) {
-      this.updateDeviceList()
-      setInterval(() => {
-        this.updateDeviceList()
-      }, 1000*10)
-    }
   }
     
   stop() {
