@@ -10,6 +10,7 @@ logSpotify = (...args) => { /* do nothing */ }
 Module.register("EXT-Spotify", {
   defaults: {
     debug: true,
+    mini: true,
     forceSCL: false,
     updateInterval: 1000,
     CLIENT_ID: "",
@@ -173,9 +174,13 @@ Module.register("EXT-Spotify", {
       SCL: this.SCL,
       debug: this.config.debug
     }
+    this.configClass = {
+      debug: this.config.debug,
+      deviceDisplay: this.translate("SpotifyListenText"),
+      mini: this.config.mini
+    }
     logSpotify("configHelper:" , this.configHelper)
-    this.configHelper.visual.deviceDisplay = this.translate("SpotifyListenText")
-    this.Spotify = new Spotify(this.configHelper.visual, callbacks, this.config.debug)
+    this.Spotify = new Spotify(this.configClass, callbacks)
     if (this.SCL) this.CanvasLyrics = new CanvasLyrics(callbacks, this.Player)
   },
 
@@ -214,7 +219,7 @@ Module.register("EXT-Spotify", {
 
   getDom: function() {
     /** Create Spotify **/
-    return this.Spotify.prepareMini()
+    return this.Spotify.prepare()
   },
 
   notificationReceived: function(noti, payload, sender) {
