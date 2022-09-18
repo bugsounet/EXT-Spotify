@@ -501,12 +501,12 @@ class CanvasLyrics {
     playSVG.remove()
     if (playing) {
       s.classList.remove("pausing")
-      video.play()
+      if (!this.config.noCanvas) video.play()
       var drawPlay = SVG().addTo('#EXT_SPOTIFYCL_PLAY').size("32px", "32px").viewbox(0,0,16,16).fill('black').move(0, 10).addClass('playCL')
       drawPlay = drawPlay.path(this.paths.pause)
     } else {
       s.classList.add("pausing")
-      video.pause()
+      if (!this.config.noCanvas) video.pause()
       var drawPlay = SVG().addTo('#EXT_SPOTIFYCL_PLAY').size("32px", "32px").viewbox(0,0,16,16).fill('black').move(0, 10).addClass('playCL')
       drawPlay = drawPlay.path(this.paths.play)
     }
