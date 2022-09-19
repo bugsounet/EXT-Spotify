@@ -5,11 +5,9 @@
   box-sizing:border-box;
   color:#EEE;
   font-weight:normal;
-  font-size:18px;
   text-align:left;
   line-height:120%;
   text-shadow:black 2px 2px 2px;
-  width: 100%;
   margin-bottom: 5px;
 }
 
@@ -22,33 +20,21 @@
   height:100%;
   display:flex;
   box-sizing:border-box;
-  flex-direction:row;
   justify-content: space-between;
-  padding:0;
 }
 
 #EXT_SPOTIFY_COVER {
   margin-bottom:0.5vh;
   position: relative;
-  width:75px;
-  height:75px;
-  padding:0;
-  /*z-index:1;*/
 }
 
 #EXT_SPOTIFY_COVER_IMAGE {
   width:100%;
   box-shadow:black 1px 1px 1px 1px;
-  height:75px;
-  border-radius:0px;
 }
 
 #EXT_SPOTIFY_PROGRESS_BAR {
   position: relative;
-  width: 100%;
-  height: 2px;
-  border: 0px transparent;
-  margin-bottom: 5px;
 }
 
 progress[value]#EXT_SPOTIFY_PROGRESS_BAR::-webkit-progress-value {
@@ -65,34 +51,8 @@ progress[value]#EXT_SPOTIFY_PROGRESS_BAR::-webkit-progress-bar {
   width: 50px;
 }
 
-#EXT_SPOTIFY_MISC {
-  display: flex;
-  flex-direction:column;
-  justify-content: space-between;
-  margin-left: 0.5vw;
-  margin-right: 0.5vw;
-  overflow: hidden;
-  width:calc(100% - 75px - 50px);
-}
-
-#EXT_SPOTIFY_INFO {
-  display: flex;
-  flex-direction:row;
-  justify-content: flex-start;
-  height: 70%;
-  justify-content: center;
-  align-items: center;
-  width: initial;
-}
-
 #EXT_SPOTIFY_TITLE {
   font-weight: bold;
-}
-
-#EXT_SPOTIFY_LOGO {
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%);
 }
 
 #EXT_SPOTIFY_INFO_FOOTER {
@@ -193,7 +153,6 @@ progress[value]#EXT_SPOTIFY_PROGRESS_BAR::-webkit-progress-bar {
 }
 
 /* spotify mini */
-/* style "mini" */
 #EXT_SPOTIFY.mini {
   width: 360px;
   font-size: 16px;
@@ -226,13 +185,13 @@ progress[value]#EXT_SPOTIFY_PROGRESS_BAR::-webkit-progress-bar {
 }
 
 #EXT_SPOTIFY.mini #EXT_SPOTIFY_COVER {
-  width:140px;
-  height:140px;
+  width: 140px;
+  height: 140px;
   padding:0;
 }
 
 #EXT_SPOTIFY.mini #EXT_SPOTIFY_COVER_IMAGE {
-  height:140px;
+  height: 140px;
   border-radius: 20px;
 }
 
@@ -250,11 +209,11 @@ progress[value]#EXT_SPOTIFY_PROGRESS_BAR::-webkit-progress-bar {
   width:220px;
   padding-left:10px;
   margin-top:5px;
-    display: block;
-    flex-direction: initial;
-    height: auto;
-    justify-content: initial;
-    align-items: initial;
+  display: block;
+  flex-direction: initial;
+  height: auto;
+  justify-content: initial;
+  align-items: initial;
 }
 
 #EXT_SPOTIFY.mini #EXT_SPOTIFY_INFO > * {
@@ -284,7 +243,7 @@ progress[value]#EXT_SPOTIFY_PROGRESS_BAR::-webkit-progress-bar {
 }
 
 #EXT_SPOTIFY.mini #EXT_SPOTIFY_VOLUME {
-  margin-left: 10px;
+ /* margin-left: 10px;*/
 }
 
 #EXT_SPOTIFY.mini #EXT_SPOTIFY_LOGO {
@@ -300,7 +259,7 @@ progress[value]#EXT_SPOTIFY_PROGRESS_BAR::-webkit-progress-bar {
   align-items: center;
   text-align: center;
   line-height: inherit;
-  font-size: 17px
+  font-size: 15px
 }
 
 #EXT_SPOTIFY.mini #EXT_SPOTIFY_INFO .infoicon {
@@ -311,3 +270,516 @@ progress[value]#EXT_SPOTIFY_PROGRESS_BAR::-webkit-progress-bar {
   text-align: center;
   line-height: inherit;
 }
+
+/** spotify big **/
+#EXT_SPOTIFY.big {
+  width: 400px;
+  font-size: 18px;
+  height: auto;
+}
+
+#EXT_SPOTIFY.big #EXT_SPOTIFY_BACKGROUND {
+  background-size: cover;
+  background-position: center center;
+  filter: blur(16px) opacity(90%) grayscale(33%);
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index:0;
+}
+
+#EXT_SPOTIFY.big #EXT_SPOTIFY_FOREGROUND {
+  padding:20px;
+  flex-direction:column;
+}
+
+#EXT_SPOTIFY.big .mdi {
+  font-size: 14px;
+}
+
+#EXT_SPOTIFY.big .infoicon {
+  margin-right: 6px;
+}
+
+#EXT_SPOTIFY.big #EXT_SPOTIFY_COVER {
+  width: 360px;
+  height: 360px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#EXT_SPOTIFY.big #EXT_SPOTIFY_COVER_IMAGE {
+  height:100%;
+  border-radius:10px;
+}
+
+#EXT_SPOTIFY.big #EXT_SPOTIFY_MISC {
+  display: unset;
+  flex-direction: initial;
+  justify-content: initial;
+  margin-left: initial;
+  margin-right: initial;
+  overflow: initial;
+  width: initial;
+}
+
+#EXT_SPOTIFY.big #EXT_SPOTIFY_INFO {
+  width: 380px;
+  padding-left:10px;
+  margin-top:5px;
+  display: block;
+  flex-direction: initial;
+  height: auto;
+  justify-content: initial;
+  align-items: initial;
+}
+
+#EXT_SPOTIFY.big #EXT_SPOTIFY_INFO > * {
+  display: flex;
+  justify-content: flex-start;
+}
+
+#EXT_SPOTIFY.big #EXT_SPOTIFY_INFO .text {
+  width: 330px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-left: -5px;
+}
+
+#EXT_SPOTIFY.big #EXT_SPOTIFY_PROGRESS_BAR {
+  margin:5px;
+  width: 100%;
+  border: 1px solid #aaaaaa;
+  height: 10px;
+}
+
+#EXT_SPOTIFY.big #EXT_SPOTIFY_PROGRESS_TIME {
+  display:none;
+}
+
+#EXT_SPOTIFY.big #EXT_SPOTIFY_LOGO {
+  position: relative;
+  text-align: center;
+  left: auto;
+  transform: none;
+  color: #1db954;
+}
+
+#EXT_SPOTIFY.big #EXT_SPOTIFY_VOLUME .infoicon {
+  font-size: 20px
+}
+
+#EXT_SPOTIFY.big #EXT_SPOTIFY_INFO .infoicon {
+  width: 23px;
+  margin-right: 10px;
+  text-shadow: black 2px 2px 2px;
+  align-items: center;
+  text-align: center;
+  line-height: inherit;
+}
+
+/** CanvasLyrics **/
+#EXT_SPOTIFYCL {
+  width: 100%;
+  height: 100%;
+  text-shadow: black 5px 5px 5px;
+  font-size: 18px;
+  color: #EEE;
+  font-weight: normal;
+  top: 0;
+  left: 0;
+  position: fixed;
+}
+
+#EXT_SPOTIFYCL.pausing {
+  filter:brightness(50%) grayscale(75%);
+}
+
+#EXT_SPOTIFYCL_BACKGROUND {
+  background-size: cover;
+  background-position: center center;
+  filter: blur(16px) opacity(50%) grayscale(33%);
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index:0;
+}
+
+#EXT_SPOTIFYCL_BACKGROUND.hidden {
+  display: none;
+}
+
+#EXT_SPOTIFYCL_CONTENT {
+  position: relative;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+}
+
+#EXT_SPOTIFYCL_DISPLAY {
+  display: flex;
+  flex: 1 1 auto;
+  height: 100%;
+  width: 100%;
+}
+
+#EXT_SPOTIFYCL_DISPLAY.vertical {
+  flex-direction: column;
+}
+
+#EXT_SPOTIFYCL_CONTROLBOX {
+  flex: 1 1 auto;
+  margin-bottom: 20px;
+}
+
+#EXT_SPOTIFYCL_PLAYING {
+  flex: 0 0 25%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 5px;
+}
+
+#EXT_SPOTIFYCL_PLAYING.vertical {
+  margin-left: auto;
+  margin-right: auto;
+  flex: 0 0 auto;
+}
+
+#EXT_SPOTIFYCL_LYRICS {
+  flex: 1 1 auto;
+  text-align: center;
+  contain: strict;
+  color: gray;
+  margin: 15px;
+}
+
+#EXT_SPOTIFYCL_LYRICS.vertical {
+  margin-top: 50px;
+}
+
+#EXT_SPOTIFYCL_LINE {
+  font-size: 1.5em;
+}
+
+#EXT_SPOTIFYCL_LINE.active {
+  font-size: 2em;
+  color: #eee;
+  font-weight: bold;
+}
+
+#EXT_SPOTIFYCL_LINE.hidden {
+  display:none
+}
+
+#EXT_SPOTIFYCL_VIDEO {
+  flex: 0 0 20%;
+  height: 85vh;
+  box-sizing: border-box;
+  object-fit: fill;
+  margin: 5px;
+}
+
+#EXT_SPOTIFYCL_CANVAS {
+  height: 85vh;
+  width: 27vw;
+}
+
+#EXT_SPOTIFYCL_CANVAS.vertical {
+  filter: blur(3px) opacity(50%) grayscale(33%);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  z-index: 0;
+}
+
+#EXT_SPOTIFYCL_CANVAS.hidden {
+  display: none;
+}
+
+#EXT_SPOTIFYCL_PROGRESS_BAR {
+  position: relative;
+  width: 100%;
+  height: 5px;
+  border: 0px transparent;
+  margin-bottom: 5px;
+}
+
+progress[value]#EXT_SPOTIFYCL_PROGRESS_BAR::-webkit-progress-value {
+  background-color: #FFF;
+}
+
+progress[value]#EXT_SPOTIFYCL_PROGRESS_BAR::-webkit-progress-bar {
+  background-color: #666;
+}
+
+#EXT_SPOTIFYCL_TIME {
+  display: flex;
+  font-size: 1em;
+}
+
+#EXT_SPOTIFYCL_TIMECURRENT {
+  flex: 1;
+  margin-left: 10px;
+}
+
+#EXT_SPOTIFYCL_TIMEEND {
+  margin-right: 10px;
+}
+
+#EXT_SPOTIFYCL_COVER {
+  width: 98%;
+  margin: 5px;
+  display: flex;
+}
+
+#EXT_SPOTIFYCL_COVER.fade-in {
+  animation: fadeInOpacity 1s 1;
+  animation-timing-function: linear;
+}
+
+@keyframes fadeInOpacity {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+#EXT_SPOTIFYCL_TITLE {
+  margin-left: 20px;
+  font-size: 40px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#EXT_SPOTIFYCL_ARTIST {
+  margin-left: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#EXT_SPOTIFYCL_LOGO {
+    width: 15vw;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+#EXT_SPOTIFYCL_CTRLS {
+  display: flex;
+}
+
+#EXT_SPOTIFYCL_CTRL1,
+#EXT_SPOTIFYCL_CTRL3 {
+  flex: 1 1 auto;
+  margin-top: 10px;
+  padding: 16px;
+  width: 300px;
+}
+
+#EXT_SPOTIFYCL_CTRL2 {
+  display: flex;
+}
+
+#EXT_SPOTIFYCL_SHUFFLE,
+#EXT_SPOTIFYCL_PREVIOUS,
+#EXT_SPOTIFYCL_REPEAT,
+#EXT_SPOTIFYCL_NEXT {
+  margin: 10px;
+  padding: 16px;
+  display: flex;
+}
+
+#EXT_SPOTIFYCL_PLAY {
+  margin: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
+
+  padding: 16px;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  align-items: center;
+  background-color: #fff;
+  border: none;
+  border-radius: 32px;
+  display: flex;
+}
+
+#EXT_SPOTIFYCL_VOLUME {
+  display: flex;
+  justify-content: flex-end;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+  align-items: center;
+}
+
+#EXT_SPOTIFYCL_VOLUMEICON {
+  place-self: flex-end;
+  display: flex;
+}
+
+#EXT_SPOTIFYCL_VOLUMEVALUE {
+  margin: 5px;
+  border-radius: 10px;
+  overflow: hidden;
+  height: 8px;
+  width: 30%;
+  border: 0px transparent;
+}
+
+#EXT_SPOTIFYCL_VOLUMEVALUE.vertical {
+  width: 150px;
+}
+
+progress[value]#EXT_SPOTIFYCL_VOLUMEVALUE::-webkit-progress-value {
+  background-color: #1db954;
+}
+
+progress[value]#EXT_SPOTIFYCL_VOLUMEVALUE::-webkit-progress-bar {
+  background-color: #666;
+}
+
+#EXT_SPOTIFYCL_SPEAKER {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: center;
+  font-size: medium;
+}
+
+#EXT_SPOTIFYCL_SPEAKERICON {
+  place-self: flex-start;
+  display: flex;
+}
+
+#EXT_SPOTIFYCL_SPEAKERNAME {
+  margin: 5px;
+  margin-left: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/** popup panel **/
+:root {
+    --panel-background-color: #000;
+    --panel-box-shadow: 0 0 4px rgba(204, 204, 204, 0.75);
+    --panel-width: 160px;
+    --panel-text-color: #fff;
+    --panel-text-color: #fff;
+    --panel-hover-item-background-color: #000;
+    --panel-icon-width: 13px;
+    --panel-separator-color: #dfe3eb;
+}
+
+/* the pannel */
+.jspanel {
+    box-sizing: border-box;
+    position: absolute;
+    z-index: 1001;
+    background-color: var(--panel-background-color, #fff);
+    box-shadow: var(--panel-box-shadow, 0 0 4px rgba(204, 204, 204, 0.75));
+    border-radius: 5px;
+    padding: 10px 0;
+    width: fit-content;
+    min-height: 50px;
+    height: auto;
+    visibility: visible; /* important */
+    opacity: 90%;
+}
+
+/* Never change the visibility of the sign by yourself. */
+.jspanel.panel-hidden {
+    visibility: hidden;
+}
+
+/* the list of items */
+.jspanel .container-items {
+    box-sizing: border-box;
+    display:flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+/* for each item */
+.jspanel button {
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    height: 30px;
+    box-sizing: border-box;
+    padding: 0 20px;
+    color: var(--panel-text-color, #404040);
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+}
+
+.jspanel button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.jspanel button:hover {
+    background-color: var(--panel-hover-item-background-color, #f4f6fa);
+    color: var(--panel-hover-item-color, #385074);
+}
+
+.jspanel button:focus {
+    outline: none;
+}
+
+/* the title of the item */
+.jspanel button span {
+    pointer-events: none;
+    -webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+    display: flex;
+    width: 100%;
+    text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	font-size: medium;
+}
+
+/* img is an `icon`, i is a `fontawesome_icon` */
+.jspanel button img,
+.jspanel button i {
+    pointer-events: none;
+    -webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+    margin-right: 10px;
+}
+
+/* the icon */
+.jspanel button img {
+    width: var(--panel-icon-width, 13px);
+    height: auto;
+}
+
+/* for each separator */
+.jspanel .jspanel-separator {
+    height: 1px;
+    width: 100%;
+    margin: 8px 0;
+    background-color: var(--panel-separator-color, #dfe3eb);
+}
+

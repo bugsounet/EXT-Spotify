@@ -1,7 +1,7 @@
 /**
  ** Module : EXT-Spotify
  ** @bugsounet
- ** ©08/2022
+ ** ©09/2022
  ** support: https://forum.bugsounet.fr
  **/
 
@@ -9,9 +9,11 @@ logSpotify = (...args) => { /* do nothing */ }
 
 Module.register("EXT-Spotify", {
   defaults: {
-    debug: true,
+    debug: false,
+    mini: true,
+    forceSCL: false,
+    noCanvas: false,
     updateInterval: 1000,
-    idleInterval: 10000,
     CLIENT_ID: "",
     CLIENT_SECRET: ""
   },
@@ -27,7 +29,6 @@ Module.register("EXT-Spotify", {
     }
     this.Visual = {
       updateInterval: this.config.updateInterval,
-      idleInterval: this.config.idleInterval,
       PATH: "../",
       TOKEN: "tokenSpotify.json",
       CLIENT_ID: this.config.CLIENT_ID,
@@ -35,6 +36,8 @@ Module.register("EXT-Spotify", {
     }
     this.SCL = false
     this.SPOTIFYCL = false
+    this.ForceSCL = false
+    this.init = false
     /** Search player **/
     let Librespot = config.modules.find(m => m.module == "EXT-Librespot")
     let Raspotify = config.modules.find(m => m.module == "EXT-Raspotify")
@@ -68,6 +71,7 @@ Module.register("EXT-Spotify", {
     let SpotifyCanvasLyrics = config.modules.find(m => m.module == "EXT-SpotifyCanvasLyrics")
     if (SpotifyCanvasLyrics && !SpotifyCanvasLyrics.disabled) {
       this.SCL = true
+      if (this.config.forceSCL) this.ForceSCL= this.config.forceSCL
       logSpotify("EXT-SpotifyCanvasLyrics Found!")
     }
 
@@ -101,22 +105,93 @@ Module.register("EXT-Spotify", {
       },
       "spotifyPlaying": (play) => {
         this.sendNotification("EXT_SPOTIFY-PLAYING", play)
+      },
+      "spotifyForceSCL": () => {
+        if (this.SCL) this.ForceSCL = true
+      },
+      "init": () => { this.init = true },
+      "command": (command, param) => {
+        switch(command) {
+          case "PLAY":
+            this.SpotifyCommand("PLAY")
+            break
+          case "PAUSE":
+            this.SpotifyCommand("PAUSE")
+            break
+          case "NEXT":
+            this.SpotifyCommand("NEXT")
+            break
+          case "PREVIOUS":
+            this.SpotifyCommand("PREVIOUS")
+            break
+          case "SEEK":
+            this.SpotifyCommand("SEEK", param)
+            break
+          case "REPEAT":
+            this.SpotifyCommand("REPEAT")
+            break
+          case "SHUFFLE":
+            this.SpotifyCommand("SHUFFLE")
+            break
+          case "TRANSFERID":
+            this.sendSocketNotification("SPOTIFY_TRANSFER_BYID", param)
+            break
+          case "VOLUME":
+            if (isNaN(param)) {
+              this.sendNotification("EXT_ALERT", {
+                type: "error",
+                message: "Volume MUST be a number ! [0-100]",
+                icon: "modules/EXT-Spotify/components/Spotify-Logo.png"
+              })
+              console.error("[SPOTIFY] Volume Must be a number ! [0-100]")
+              return
+            }
+            if (param > 100) param = 100
+            if (param < 0) param = 0
+            logSpotify("Volume FORCE SET: " + param)
+            this.spotify.targetVolume = param
+            if (!this.assistantSpeak) this.sendSocketNotification("SPOTIFY_VOLUME", this.spotify.targetVolume)
+            break
+        }
+      },
+      "closeDisplay": () => {
+        this.ForceSCL = false
+        this.SPOTIFYCL = false
+        this.HideOrShow(false)
+      },
+      "askDevices": () => {
+        this.sendSocketNotification("ASK_DEVICES")
+      },
+      "alert": (params) => {
+        this.sendNotification("EXT_ALERT", params)
+      },
+      "searchCL": (params) => {
+        this.sendSocketNotification("SEARCH_CL",params)
       }
     }
     this.configHelper = {
       visual: this.Visual,
-      player: this.Player
+      player: this.Player,
+      SCL: this.SCL,
+      debug: this.config.debug
+    }
+    this.configClass = {
+      debug: this.config.debug,
+      deviceDisplay: this.translate("SpotifyListenText"),
+      mini: this.config.mini,
+      noCanvas: this.config.noCanvas
     }
     logSpotify("configHelper:" , this.configHelper)
-    this.configHelper.visual.deviceDisplay = this.translate("SpotifyListenText")
-    this.Spotify = new Spotify(this.configHelper.visual, callbacks, this.config.debug)
-
+    this.Spotify = new Spotify(this.configClass, callbacks)
+    if (this.SCL) this.CanvasLyrics = new CanvasLyrics(this.configClass, callbacks, this.Player)
   },
 
   getScripts: function() {
     return [
       "/modules/EXT-Spotify/components/spotifyClass.js",
-      "https://code.iconify.design/1/1.0.6/iconify.min.js"
+      "https://code.iconify.design/1/1.0.6/iconify.min.js",
+      "/modules/EXT-Spotify/components/CanvasLyrics.js",
+      "/modules/EXT-Spotify/components/JSPanel.js"
     ]
   },
 
@@ -125,7 +200,8 @@ Module.register("EXT-Spotify", {
       "EXT-Spotify.css",
       "https://cdn.materialdesignicons.com/5.2.45/css/materialdesignicons.min.css",
       "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css",
-      "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css",
+      "https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@3.0/dist/svg.min.js",
     ]
   },
 
@@ -145,13 +221,14 @@ Module.register("EXT-Spotify", {
 
   getDom: function() {
     /** Create Spotify **/
-    return this.Spotify.prepareMini()
+    return this.Spotify.prepare()
   },
 
   notificationReceived: function(noti, payload, sender) {
     switch(noti) {
       case "DOM_OBJECTS_CREATED":
         this.sendSocketNotification("INIT", this.configHelper)
+        if (this.SCL) this.CanvasLyrics.prepare()
         break
       case "GAv4_READY":
         if (sender.name == "MMM-GoogleAssistant") this.sendNotification("EXT_HELLO", this.name)
@@ -230,6 +307,17 @@ Module.register("EXT-Spotify", {
       case "EXT_SPOTIFY-SEEK":
         this.SpotifyCommand("SEEK", payload)
         break
+      case "EXT_SPOTIFY-SCL":
+        if (!this.SCL) return
+        this.ForceSCL = payload
+        if (this.ForceSCL) {
+          this.HideOrShow(true)
+          this.SPOTIFYCL = true
+        } else {
+          this.SPOTIFYCL = false
+          this.HideOrShow(false)
+        }
+        break
     }
   },
 
@@ -238,8 +326,8 @@ Module.register("EXT-Spotify", {
       /** Spotify module **/
       case "SPOTIFY_PLAY":
         this.Spotify.updateCurrentSpotify(payload)
-        if (this.SCL && payload.device && payload.device.name == this.Player.deviceName) {
-          this.sendNotification("EXT_SPOTIFYCL-PLAYING", payload)
+        if (this.SCL && this.init && (this.ForceSCL || (payload.device && payload.device.name == this.Player.deviceName))) {
+          this.CanvasLyrics.updateCurrentSpotify(payload)
           this.HideOrShow(true)
           this.SPOTIFYCL = true
         } else this.Spotify.updateCurrentSpotify(payload)
@@ -273,6 +361,9 @@ Module.register("EXT-Spotify", {
           }
         }
         break
+      case "SPOTIFY_DEVICELIST":
+        this.CanvasLyrics.updateDevicesList(payload.devices)
+        break
       case "SPOTIFY_IDLE":
         this.Spotify.updatePlayback(false)
         this.spotify.player = false
@@ -296,6 +387,12 @@ Module.register("EXT-Spotify", {
         break
       case "PLAYER_RECONNECT":
         this.sendNotification("EXT_PLAYER-SPOTIFY_RECONNECT")
+        break
+      case "CANVAS":
+        this.CanvasLyrics.displayCanvas(payload)
+        break
+      case "LYRICS":
+        this.CanvasLyrics.loadLyrics(payload)
         break
     }
   },
@@ -337,6 +434,13 @@ Module.register("EXT-Spotify", {
       description: "Spotify commands",
       callback: "tbSpotify"
     })
+    if (this.SCL) {
+      commander.add({
+        command: "lyrics",
+        description: "Spotify Canvas Lyrics",
+        callback: "tbSCL"
+      })
+    }
   },
 
   tbSpotify: function(command, handler) {
@@ -388,6 +492,29 @@ Module.register("EXT-Spotify", {
   *previous*: Previous track\n\
   *volume*: Volume control, it need a value 0-100\n\
   *to*: Transfert music to another device (case sensitive)\
+  ',{parse_mode:'Markdown'})
+    }
+  },
+
+  tbSCL: function(command, handler) {
+    if (handler.args) {
+      var args = handler.args.toLowerCase().split(" ")
+      var params = handler.args.split(" ")
+      if (args[0] == "on") {
+        handler.reply("TEXT", "Turn on Lyrics")
+        this.notificationReceived("EXT_SPOTIFY-SCL", true)
+      }
+      else if (args[0] == "off") {
+        handler.reply("TEXT", "Turn off Lyrics")
+        this.notificationReceived("EXT_SPOTIFY-SCL", false)
+      }
+      else {
+        handler.reply("TEXT", "I don't know... Try /lyrics",{parse_mode:'Markdown'})
+      }
+    } else {
+      handler.reply("TEXT", 'Need Help for /lyrics commands ?\n\n\
+  *on*: Turn on Canvas Lyrics mode\n\
+  *off*: Turn off Canvas Lyrics mode\
   ',{parse_mode:'Markdown'})
     }
   },

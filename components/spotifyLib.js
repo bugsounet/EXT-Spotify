@@ -2,7 +2,7 @@
 // Spotify library
 // Developers : Seongnoh Sean Yi (eouia0819@gmail.com)
 //              bugsounet (bugsounet@bugsounet.fr)
-// v1.1.1: 26/08/2022
+// v1.2.0: 26/09/2022
 
 const fs = require("fs")
 const path = require("path")
@@ -15,8 +15,7 @@ const moment = require("moment")
 var _Debug = (...args) => { /* do nothing */ }
 
 class Spotify {
-  constructor(config, callback, debug = false, first = false) {
-    this.version = "v1.1.0"
+  constructor(config, callback, debug = false, first = false, SCL = false) {
     this.notification = callback
     this.default = {
       CLIENT_ID: "",
@@ -27,13 +26,13 @@ class Spotify {
       SCOPE: "user-read-private app-remote-control playlist-read-private streaming user-read-playback-state user-modify-playback-state",
       TOKEN: "./token.json",
       PATH: "../",
-      updateInterval: 1000,
-      idleInterval: 10000,
+      updateInterval: 1000
     }
     this.retryTimer = null
     this.timer = null
     this.token = null
     this.setup = first
+    this.SCL = SCL
     this.config = Object.assign({}, this.default, config)
     if (debug) _Debug = (...args) => { console.log("[SPOTIFY]", ...args) }
 
@@ -43,7 +42,7 @@ class Spotify {
       ).toString('base64')
     )
     this.initFromToken()
-    _Debug("Spotify v" + this.version + " Initialized...")
+    _Debug("Spotify library Initialized...")
   }
 
   async pulse() {
@@ -52,13 +51,12 @@ class Spotify {
       let result = await this.updateSpotify(this.config)
       this.notification("SPOTIFY_PLAY", result)
     } catch (e) {
-      idle = true
       if (e) console.log("[SPOTIFY:ERROR]", e)
       this.notification("SPOTIFY_IDLE")
     }
     this.timer = setTimeout(() => {
       this.pulse()
-    }, idle ? this.config.idleInterval : this.config.updateInterval)
+    }, this.config.updateInterval)
   }
 
   start() {
@@ -72,6 +70,17 @@ class Spotify {
     clearTimeout(this.retryTimer)
     this.retryTimer = null
     _Debug("Stop")
+  }
+
+  updateDeviceList() {
+    this.getDevices((code, error, result) => {
+      if (result === "undefined" || code !== 200) {
+        console.log("[SPOTIFY:DEVICE LIST] Error", code, result)
+      } else {
+        _Debug("[DEVICE LIST]", result)
+        this.notification("SPOTIFY_DEVICELIST", result)
+      }
+    })
   }
     
   updateSpotify(spotify) {
@@ -252,6 +261,10 @@ class Spotify {
         cb(code, error, result)
       }
     })
+  }
+
+  transferById(device, cb) {
+    this.transfer({ device_ids: [device] }, cb)
   }
 
   volume(volume = 50, cb) {

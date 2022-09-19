@@ -1,11 +1,12 @@
-/* Spotify class rev: 220304 */
+/* Spotify class rev: 220918 */
 
 class Spotify {
-  constructor (Config, callbacks, debug) {
+  constructor (Config, callbacks) {
     this.config = Config
-    this.debug = debug
+    this.debug = this.config.debug
     this.spotifyStatus = callbacks.spotifyStatus
     this.spotifyPlaying = callbacks.spotifyPlaying
+    this.spotifyForceSCL = callbacks.spotifyForceSCL
     this.currentPlayback = null
     this.connected = false
     this.timer = null
@@ -14,23 +15,27 @@ class Spotify {
   }
 
   /** Create a default display **/
-  prepareMini() {
+  prepare() {
     var viewDom = document.createElement("div")
     viewDom.id = "EXT_SPOTIFY"
-    viewDom.className= "inactive mini animate__animated"
+    viewDom.className= "inactive animate__animated"
+    if (this.config.mini) viewDom.classList.add("mini")
+    else viewDom.classList.add("big")
     viewDom.style.setProperty('--animate-duration', '1s')
 
     viewDom.appendChild(this.getHTMLElementWithID('div', "EXT_SPOTIFY_BACKGROUND"))
 
     const cover_img = this.getHTMLElementWithID('img', "EXT_SPOTIFY_COVER_IMAGE")
     cover_img.className = 'fade-in'
+    cover_img.addEventListener('click', e => {
+      this.spotifyForceSCL()
+    })
 
     const cover = this.getHTMLElementWithID('div', "EXT_SPOTIFY_COVER")
     cover.appendChild(cover_img)
 
     const misc = this.getHTMLElementWithID('div', "EXT_SPOTIFY_MISC")
     misc.appendChild(this.getInfoContainer())
-    misc.appendChild(this.getVolumeContainer())
     misc.appendChild(this.getProgressContainer())
     misc.appendChild(this.getSpotifyLogoContainer())
 
@@ -373,6 +378,7 @@ class Spotify {
     }
 
     info.appendChild(this.getDeviceContainer())
+    info.appendChild(this.getVolumeContainer())
     return info
   }
 
