@@ -9,10 +9,10 @@ logSpotify = (...args) => { /* do nothing */ }
 
 Module.register("EXT-Spotify", {
   defaults: {
-    debug: true,
+    debug: false,
     mini: true,
     forceSCL: false,
-    noCanvas: true, // force for testing
+    noCanvas: false,
     updateInterval: 1000,
     CLIENT_ID: "",
     CLIENT_SECRET: ""
