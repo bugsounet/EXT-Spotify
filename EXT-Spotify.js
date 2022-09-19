@@ -14,6 +14,7 @@ Module.register("EXT-Spotify", {
     forceSCL: false,
     noCanvas: false,
     updateInterval: 1000,
+    idleInterval: 10000,
     CLIENT_ID: "",
     CLIENT_SECRET: ""
   },
@@ -29,6 +30,7 @@ Module.register("EXT-Spotify", {
     }
     this.Visual = {
       updateInterval: this.config.updateInterval,
+      idleInterval: this.config.idleInterval,
       PATH: "../",
       TOKEN: "tokenSpotify.json",
       CLIENT_ID: this.config.CLIENT_ID,
