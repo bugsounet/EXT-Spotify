@@ -51,12 +51,13 @@ class Spotify {
       let result = await this.updateSpotify(this.config)
       this.notification("SPOTIFY_PLAY", result)
     } catch (e) {
+      idle = true
       if (e) console.log("[SPOTIFY:ERROR]", e)
       this.notification("SPOTIFY_IDLE")
     }
     this.timer = setTimeout(() => {
       this.pulse()
-    }, this.config.updateInterval)
+    }, idle ? this.config.idleInterval : this.config.updateInterval)
   }
 
   start() {
