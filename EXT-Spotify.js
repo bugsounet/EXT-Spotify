@@ -233,7 +233,10 @@ Module.register("EXT-Spotify", {
         if (this.SCL) this.CanvasLyrics.prepare()
         break
       case "GAv4_READY":
-        if (sender.name == "MMM-GoogleAssistant") this.sendNotification("EXT_HELLO", this.name)
+        if (sender.name == "MMM-GoogleAssistant") {
+          this.sendNotification("EXT_HELLO", this.name)
+          if (this.config.forceSCL) setTimeout( () => { this.sendNotification("EXT_SPOTIFY-SCL_FORCED", true) } ,1000)
+        }
         break
       case "ASSISTANT_LISTEN":
       case "ASSISTANT_THINK":
@@ -313,6 +316,7 @@ Module.register("EXT-Spotify", {
         if (!this.SCL) return
         this.ForceSCL = payload
         this.sendNotification("EXT_SPOTIFY-SCL_FORCED", payload)
+        if (!this.spotify.connected) return
         if (this.ForceSCL) {
           this.HideOrShow(true)
           this.SPOTIFYCL = true
