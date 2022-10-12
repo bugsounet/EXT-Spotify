@@ -112,8 +112,7 @@ var recipe = {
       },
       soundExec: {
         chime: "open"
-      },
-      displayResponse: true
+      }
     },
     "START_SPOTIFY": {
       notificationExec: {
