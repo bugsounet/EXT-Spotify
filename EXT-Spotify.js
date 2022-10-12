@@ -312,6 +312,7 @@ Module.register("EXT-Spotify", {
       case "EXT_SPOTIFY-SCL":
         if (!this.SCL) return
         this.ForceSCL = payload
+        this.sendNotification("EXT_SPOTIFY-SCL_FORCED", payload)
         if (this.ForceSCL) {
           this.HideOrShow(true)
           this.SPOTIFYCL = true
