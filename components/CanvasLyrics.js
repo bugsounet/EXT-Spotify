@@ -302,7 +302,7 @@ class CanvasLyrics {
     })
   }
 
-  updateCurrentSpotify(current) {
+  async updateCurrentSpotify(current) {
     if (!current) return
     if (!this.currentPlayback) {
       this.updateBackground(current.item)
@@ -358,7 +358,7 @@ class CanvasLyrics {
       }
       if (this.currentPlayback.progress_ms !== current.progress_ms) {
         this.updateProgress(current.progress_ms, current.item.duration_ms)
-        this.displayActiveLyrics(current.progress_ms)
+        await this.displayActiveLyrics(current.progress_ms)
       }
     }
     this.currentPlayback = current
@@ -558,36 +558,40 @@ class CanvasLyrics {
   }
 
   displayActiveLyrics(time) {
-    this.lyrics.forEach((line, nb) => {
-      var focus = document.getElementsByClassName(line.time)[0]
+    return new Promise((resolve) => {
+      time = time +500 // pre-display
+      this.lyrics.forEach((line, nb) => {
+        var focus = document.getElementsByClassName(line.time)[0]
 
-      if (line.time < time) {
-        // hide all lyric < current time
-        focus.classList.add("hidden")
-        focus.classList.remove("active")
-      } else {
-        // show others lyric
-        focus.classList.remove("hidden")
-        focus.classList.remove("active")
-      }
+        if (line.time < time) {
+          // hide all lyric < current time
+          focus.classList.add("hidden")
+          focus.classList.remove("active")
+        } else {
+          // show others lyric
+          focus.classList.remove("hidden")
+          focus.classList.remove("active")
+        }
 
-      // end of lyrics
-      if (!this.lyrics[nb+1]) return
+        // end of lyrics
+        if (!this.lyrics[nb+1]) return
 
-      if (time >= line.time && time <= this.lyrics[nb+1].time) {
-        // focus in active lyric
-        focus.classList.remove("hidden")
-        focus.classList.add("active")
+        if (time >= line.time && time <= this.lyrics[nb+1].time) {
+          // focus in active lyric
+          focus.classList.remove("hidden")
+          focus.classList.add("active")
 
-        // don't hide last 10 lyrics lines
-        for (let x = 1; x <11; x++) {
-          if (this.lyrics[nb-x]) {
-            var oldFocus = document.getElementsByClassName(this.lyrics[nb-x].time)[0]
-            oldFocus.classList.remove("hidden")
-            oldFocus.classList.remove("active")
+          // don't hide last 10 lyrics lines
+          for (let x = 1; x <11; x++) {
+            if (this.lyrics[nb-x]) {
+              var oldFocus = document.getElementsByClassName(this.lyrics[nb-x].time)[0]
+              oldFocus.classList.remove("hidden")
+              oldFocus.classList.remove("active")
+            }
           }
         }
-      }
+      })
+      resolve()
     })
   }
 
