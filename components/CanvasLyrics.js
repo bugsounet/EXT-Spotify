@@ -384,22 +384,15 @@ class CanvasLyrics {
       return
     }
     if (result.success == "false" || (result.canvas_url.endsWith("jpg"))) {
-      if (this.vertical) {
-        canvas.classList.add("hidden")
-        //canvas.pause()
-        canvas.removeAttribute('src')
-        canvas.load()
-        back.classList.remove("hidden")
-      } else {
-        canvas.src= "/modules/EXT-Spotify/components/spotify.mp4"
-      }
+      canvas.classList.add("hidden")
+      canvas.removeAttribute('src')
+      canvas.load()
+      if (this.vertical) back.classList.remove("hidden")
     } else {
-      if (this.vertical) {
-        back.classList.add("hidden")
-        canvas.classList.remove("hidden")
-      }
+      if (this.vertical) back.classList.add("hidden")
       canvas.src= result.canvas_url
       canvas.play()
+      canvas.classList.remove("hidden")
     }
   }
 
