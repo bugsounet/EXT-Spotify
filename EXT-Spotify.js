@@ -342,12 +342,12 @@ Module.register("EXT-Spotify", {
         if (payload && payload.device && payload.device.name) {
           this.spotify.repeat = payload.repeat_state
           this.spotify.shuffle = payload.shuffle_state
-
           if (payload.device.name == this.configHelper.player.deviceName) {
             this.spotify.currentVolume = payload.device.volume_percent
             if (!this.spotify.player) {
               this.spotify.player = true
-              logSpotify("SPOTIFY_PLAY: PLAYER Connected")
+              if (this.Spotify.disconnectedCounter) return // read patch !? (value > 0)
+              logSpotify("SPOTIFY_PLAY: PLAYER Connected", this.Spotify.disconnectedCounter)
               if (this.SCL) {
                 this.HideOrShow(true)
                 this.SPOTIFYCL = true
@@ -367,6 +367,7 @@ Module.register("EXT-Spotify", {
             }
           }
         }
+        if (payload.is_playing) this.Spotify.disconnectedCounter = 0 // stay again connected ?
         break
       case "SPOTIFY_DEVICELIST":
         this.CanvasLyrics.updateDevicesList(payload.devices)
