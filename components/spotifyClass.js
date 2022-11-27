@@ -109,7 +109,7 @@ class Spotify {
         return
       }
       /** prevent all error -> reset currentPlayback **/
-      if (!current.item || !current.device || !current.progress_ms || !current.item.duration_ms) return this.currentPlayback = null
+      if (!current.item || !current.device || !current.progress_ms || !current.item.duration_ms || !this.currentPlayback.item) return this.currentPlayback = null
 
       /** All is good so ... live update **/
       if (this.currentPlayback.item.id !== current.item.id) {
