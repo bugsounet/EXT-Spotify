@@ -57,6 +57,7 @@ class Spotify {
       if (this.debug) console.log("[SPOTIFY] Disconnected")
       this.connected = false
       this.spotifyStatus(false)
+      this.spotifyPlaying(false)
 
       dom.classList.remove("animate__flipInX")
       dom.classList.add("animate__flipOutX")
