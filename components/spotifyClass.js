@@ -11,7 +11,6 @@ class Spotify {
     this.connected = false
     this.timer = null
     this.ads = false
-    this.disconnectedCounter = 0
     console.log("[SPOTIFY] Spotify Class Loaded")
   }
 
@@ -54,20 +53,11 @@ class Spotify {
     clearTimeout(this.timer)
     this.timer = null
 
-    // patch Spotify api testing !?
-    // sometime status return false but it's connected !
-    if (!status) {
-      if (this.disconnectedCounter >= 5) this.disconnectedCounter = 1
-      else this.disconnectedCounter += 1
-    }
-    else this.disconnectedCounter = 0
-    // end of patch
-
-    if (this.disconnectedCounter >= 5 && this.connected) {
+    if (this.connected && !status) {
       if (this.debug) console.log("[SPOTIFY] Disconnected")
       this.connected = false
-      this.disconnectedCounter = 0
       this.spotifyStatus(false)
+      this.spotifyPlaying(false)
 
       dom.classList.remove("animate__flipInX")
       dom.classList.add("animate__flipOutX")
@@ -80,7 +70,6 @@ class Spotify {
     }
     if (!this.connected && status) {
       if (this.debug) console.log("[SPOTIFY] Connected")
-      this.disconnectedCounter = 0
       this.connected = true
       this.spotifyStatus(true)
 
