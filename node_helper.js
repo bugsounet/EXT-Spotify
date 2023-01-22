@@ -6,16 +6,12 @@ var logSpotify = (...args) => { /* do nothing */ }
 const spotify = require("./components/spotifyLib.js")
 const path = require("path")
 const fs = require("fs")
-const request = require("request")
 
 module.exports = NodeHelper.create({
   start: function () {
     this.retry = null
     this.timeout= null
     this.retryPlayerCount = 0
-    this.SpotifyCurrentID = null
-    this.CLTimeout= null
-    this.CLRetry = 0
   },
 
   socketNotificationReceived: function (noti, payload) {
@@ -139,9 +135,6 @@ module.exports = NodeHelper.create({
         logSpotify("Search and Play", payload)
         this.searchAndPlay(payload.query, payload.condition)
         break
-      case "SEARCH_CL":
-        this.searchCL(payload)
-        break
       case "ASK_DEVICES":
         this.spotify.updateDeviceList()
         break
@@ -224,67 +217,5 @@ module.exports = NodeHelper.create({
     if (details) console.log("[SPOTIFY][ERROR]" + err, details.message, details)
     else console.log("[SPOTIFY][ERROR]" + err)
     return this.sendSocketNotification("NOT_INITIALIZED", { message: error.message, values: error.values })
-  },
-
-  searchCL: function (item) {
-    if (!item || !item.id || (this.SpotifyCurrentID == item.id)) return
-
-    this.SpotifyCurrentID = item.id
-    clearTimeout(this.CLTimeout)
-    this.CLRetry = 0
-    this.CLTimeout = null
-    var canvas = () => {
-      request(
-        {
-          url: "http://127.0.0.1:2411/api/canvas/"+item.id,
-          method: "GET",
-          json: true
-        },
-        (error, response, body) => {
-          if (error) {
-            this.SpotifyCurrentID = null
-            if (error.code === "ECONNREFUSED") {
-              this.CLTimeout = setTimeout(() => {
-                canvas()
-                lyrics()
-                this.CLRetry++
-              }, 1000)
-              if (this.CLRetry == 5) {
-                clearTimeout(this.CLTimeout)
-                this.sendSocketNotification("WARNING" , { message: "No Response from EXT-SpotifyCanvasLyrics server" })
-              }
-            }
-            return console.error("[SPOTIFYCL] Canvas API return", error.code)
-          }
-          if (body) {
-            this.CLRetry = 0
-            this.sendSocketNotification("CANVAS", body)
-            logSpotify("Canvas:", body)
-          } else console.error("[SPOTIFYCL] Canvas API return no body ?")
-        }
-      )
-    }
-    var lyrics = () => {
-      request(
-        {
-          url: "http://127.0.0.1:2411/api/lyrics/"+item.id,
-          method: "GET",
-          json: true
-        },
-        (error, response, body) => {
-          if (error) {
-            this.SpotifyCurrentID = null
-            return console.error("[SPOTIFYCL] Lyrics API return", error.code)
-          }
-          if (body) {
-            this.sendSocketNotification("LYRICS", body)
-            logSpotify("Lyrics:", body)
-          }
-          else console.error("[SPOTIFYCL] Lyrics API return no body ?")
-        }
-      )
-    }
-    canvas()
-    lyrics()
   }
 })

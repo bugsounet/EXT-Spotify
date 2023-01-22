@@ -383,14 +383,14 @@ class CanvasLyrics {
       }
       return
     }
-    if (result.success == "false" || (result.canvas_url.endsWith("jpg"))) {
+    if (!result.success || (result.canvas.url.endsWith("jpg"))) {
       canvas.classList.add("hidden")
       canvas.removeAttribute('src')
       canvas.load()
       if (this.vertical) back.classList.remove("hidden")
     } else {
       if (this.vertical) back.classList.add("hidden")
-      canvas.src= result.canvas_url
+      canvas.src= result.canvas.url
       canvas.play()
       canvas.classList.remove("hidden")
     }
@@ -515,8 +515,8 @@ class CanvasLyrics {
     return new Promise((resolve) => {
       let lyrics = []
       let error = 0
-      if (result.success == "true") {
-        result.lyrics.forEach(lyric => {
+      if (result.success) {
+        result.lyrics.lines.forEach(lyric => {
           let line = {
             time: lyric.time,
             words: lyric.words[0].string
@@ -524,6 +524,16 @@ class CanvasLyrics {
           if (!lyric.time) error++
           lyrics.push(line)
         })
+        let lastLines = {
+          time: 43200000,
+          words: "‎ "
+        }
+        lyrics.push(lastLines)
+        lastLines = {
+          time: 43200001,
+          words: "~~ Provided by " + result.lyrics.provider + " ~~"
+        }
+        lyrics.push(lastLines)
         console.log("[SPOTIFY][Lyrics] Lyrics Loaded")
       }
       if (error) {
