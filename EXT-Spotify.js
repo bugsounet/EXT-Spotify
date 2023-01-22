@@ -40,6 +40,7 @@ Module.register("EXT-Spotify", {
     this.SPOTIFYCL = false
     this.ForceSCL = false
     this.init = false
+    this.SpotifyCurrentID = null
     /** Search player **/
     let Librespot = config.modules.find(m => m.module == "EXT-Librespot")
     let Raspotify = config.modules.find(m => m.module == "EXT-Raspotify")
@@ -167,8 +168,11 @@ Module.register("EXT-Spotify", {
       "alert": (params) => {
         this.sendNotification("EXT_ALERT", params)
       },
-      "searchCL": (params) => {
-        this.sendSocketNotification("SEARCH_CL",params)
+      "searchCL": (item) => {
+        if (!item || !item.id || (this.SpotifyCurrentID == item.id)) return
+        this.SpotifyCurrentID = item.id
+        this.sendNotification("EXT_SCL-GET_LYRICS" , this.SpotifyCurrentID)
+        if (!this.config.noCanvas) this.sendNotification("EXT_SCL-GET_CANVAS" , this.SpotifyCurrentID)
       }
     }
     this.configHelper = {
@@ -325,6 +329,14 @@ Module.register("EXT-Spotify", {
           this.HideOrShow(false)
         }
         break
+      case "EXT_SCL-SEND_CANVAS":
+        if (sender.name != "EXT-SpotifyCanvasLyrics") return
+        this.CanvasLyrics.displayCanvas(payload)
+        break
+      case "EXT_SCL-SEND_LYRICS":
+        if (sender.name != "EXT-SpotifyCanvasLyrics") return
+        this.CanvasLyrics.loadLyrics(payload)
+        break
     }
   },
 
@@ -393,12 +405,6 @@ Module.register("EXT-Spotify", {
         break
       case "PLAYER_RECONNECT":
         this.sendNotification("EXT_PLAYER-SPOTIFY_RECONNECT")
-        break
-      case "CANVAS":
-        this.CanvasLyrics.displayCanvas(payload)
-        break
-      case "LYRICS":
-        this.CanvasLyrics.loadLyrics(payload)
         break
     }
   },
