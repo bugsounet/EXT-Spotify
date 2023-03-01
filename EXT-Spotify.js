@@ -440,7 +440,7 @@ Module.register("EXT-Spotify", {
   /****************************/
   /*** TelegramBot Commands ***/
   /****************************/
-  getCommands: function(commander) {
+  EXT_TELBOTCommands: function(commander) {
     commander.add({
       command: "spotify",
       description: "Spotify commands",
