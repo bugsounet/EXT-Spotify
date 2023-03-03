@@ -1,14 +1,16 @@
 {
   "name": "EXT-Spotify",
-  "version": "2.1.0",
-  "rev": "230122",
+  "version": "2.1.2",
+  "rev": "230227",
   "description": "An embedded Spotify Player for MagicMirror.",
   "main": "EXT-Spotify.js",
   "scripts": {
     "preinstall": "installer/preinstall.sh",
     "postinstall": "installer/postinstall.sh",
     "update": "installer/update.sh",
-    "token": "installer/token.sh"
+    "token": "installer/token.sh",
+    "reset": "git reset --hard",
+    "clean": "rm -rf node_modules package-lock.json"
   },
   "keywords": [
     "magic mirror",
@@ -26,7 +28,10 @@
   },
   "homepage": "https://wiki.bugsounet.fr/en/EXT-Spotify",
   "dependencies": {
+    "check-node-version": "^4.2.1",
     "express": "^4.17.1",
+    "glob": "^9.0.1",
+    "minify": "^9.2.0",
     "moment": "^2.27.0",
     "open": "^7.0.4",
     "path": "^0.12.7",
