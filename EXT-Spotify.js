@@ -236,7 +236,7 @@ Module.register("EXT-Spotify", {
         this.sendSocketNotification("INIT", this.configHelper)
         if (this.SCL) this.CanvasLyrics.prepare()
         break
-      case "GAv4_READY":
+      case "GAv5_READY":
         if (sender.name == "MMM-GoogleAssistant") {
           this.sendNotification("EXT_HELLO", this.name)
           if (this.config.forceSCL) setTimeout( () => { this.sendNotification("EXT_SPOTIFY-SCL_FORCED", true) } ,1000)
