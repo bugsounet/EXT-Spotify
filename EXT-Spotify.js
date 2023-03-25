@@ -232,12 +232,10 @@ Module.register("EXT-Spotify", {
 
   notificationReceived: function(noti, payload, sender) {
     switch(noti) {
-      case "DOM_OBJECTS_CREATED":
-        this.sendSocketNotification("INIT", this.configHelper)
-        if (this.SCL) this.CanvasLyrics.prepare()
-        break
-      case "GAv5_READY":
-        if (sender.name == "MMM-GoogleAssistant") {
+      case "GW_READY":
+        if (sender.name == "Gateway") {
+          this.sendSocketNotification("INIT", this.configHelper)
+          if (this.SCL) this.CanvasLyrics.prepare()
           this.sendNotification("EXT_HELLO", this.name)
           if (this.config.forceSCL) setTimeout( () => { this.sendNotification("EXT_SPOTIFY-SCL_FORCED", true) } ,1000)
         }

@@ -6,7 +6,7 @@
 
 const fs = require("fs")
 const path = require("path")
-const request = require("request")
+const axios = require("axios")
 const querystring = require("querystring")
 const opn = require("open")
 const express = require("express")
@@ -124,30 +124,30 @@ class Spotify {
   refreshToken(cb = null) {
     _Debug("Token refreshing...")
     var refresh_token = this.token.refresh_token
+    let data = new URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token: refresh_token
+    })
     var authOptions = {
       url: 'https://accounts.spotify.com/api/token',
+      method: "POST",
       headers: {
         'Authorization': this.authorizationSeed
       },
-      form: {
-        grant_type: 'refresh_token',
-        refresh_token: refresh_token
-      },
-      json: true
+      data: data.toString(),
+      validateStatus: function (status) {
+        return status == 200 // Resolve only if the status code is 200
+      }
     }
 
-    request.post(authOptions, (error, response, body) => {
-      if (
-        response !== 'undefined' &&
-        !error &&
-        response.statusCode === 200
-      ) {
-        body.refresh_token = this.token.refresh_token
-        this.writeToken(body, cb)
-      } else {
-        console.log("[SPOTIFY:ERROR] Token refreshing failed.")
-      }
-    })
+    axios(authOptions)
+      .then(response => {
+        response.data.refresh_token = this.token.refresh_token
+        this.writeToken(response.data, cb)
+      })
+      .catch(error => {
+        console.error("[SPOTIFY:ERROR] Token refreshing failed:", error)
+      })
   }
 
   accessToken() {
@@ -163,37 +163,26 @@ class Spotify {
       url: "https://api.spotify.com" + api,
       method: type,
       headers: {
-          'Authorization': "Bearer " + this.token.access_token
+        'Authorization': "Bearer " + this.token.access_token
       },
-      json: true
-    }
-    if (bodyParam) {
-      authOptions.body = bodyParam
-    }
 
-    if (qsParam) {
-      authOptions.qs = qsParam
     }
+    if (bodyParam) authOptions.data = bodyParam
+    if (qsParam) authOptions.params = qsParam
 
     var req = () => {
-      request(authOptions, (error, response, body) => {
-        if (error) {
-          _Debug("API Request fail on :", api)
-        } else {
-          if (api !== "/v1/me/player" && type !== "GET") {
-            _Debug("API Requested:", api)
-          }
-        }
-        if (cb) {
-          if (response && response.statusCode) {
-            cb(response.statusCode, error, body)
-          } else {
-            _Debug("Invalid response: " + error)
+      axios(authOptions)
+        .then(response => {
+          if (api !== "/v1/me/player" && type !== "GET") _Debug("API Requested:", api)
+          if (cb) cb(response.status, null, response.data)
+        })
+        .catch (error => {
+          _Debug("API Request fail on :", api, error.toString())
+          if (cb) {
             _Debug("Retry in 5 sec...")
-            this.retryTimer = setTimeout(() => { cb('400', error, body) }, 5000)
+            this.retryTimer = setTimeout(() => { cb("400", error, null) }, 5000)
           }
-        }
-      })
+        })
     }
 
     if (this.isExpired()) {
@@ -301,30 +290,35 @@ class Spotify {
 
     let server = app.get(this.config.AUTH_PATH, (req, res) => {
       let code = req.query.code || null
-      let authOptions = {
-        url: 'https://accounts.spotify.com/api/token',
-        form: {
-          code: code,
-          redirect_uri: redirect_uri,
-          grant_type: 'authorization_code'
-        },
+      let data = new URLSearchParams({
+        code: code,
+        redirect_uri: redirect_uri,
+        grant_type: "authorization_code"
+      })
+      let authOptions ={
+        url: "https://accounts.spotify.com/api/token",
+        method: "post",
+        data: data.toString(),
         headers: {
-          'Authorization': this.authorizationSeed
+          Authorization: this.authorizationSeed
         },
-        json: true
+        validateStatus: function (status) {
+          return status == 200
+        }
       }
 
-      request.post(authOptions, (requestError, response, body) => {
-        if (requestError || response.statusCode !== 200) {
+      axios(authOptions)
+        .then(response => {
+          this.writeToken(body)
+          server.close()
+          res.send(`${this.config.TOKEN} would be created. Check it`)
+          afterCallback()
+        })
+        .catch (error => {
           let msg = "[SPOTIFY_AUTH] Error in request"
           error(msg)
           return
-        }
-        this.writeToken(body)
-        server.close()
-        res.send(`${this.config.TOKEN} would be created. Check it`)
-        afterCallback()
-      });
+        })
     }).listen(this.config.AUTH_PORT)
 
     let url = "https://accounts.spotify.com/authorize?" +
