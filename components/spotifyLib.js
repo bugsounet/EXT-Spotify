@@ -309,7 +309,7 @@ class Spotify {
 
       axios(authOptions)
         .then(response => {
-          this.writeToken(body)
+          this.writeToken(response.data)
           server.close()
           res.send(`${this.config.TOKEN} would be created. Check it`)
           afterCallback()
@@ -317,7 +317,6 @@ class Spotify {
         .catch (error => {
           let msg = "[SPOTIFY_AUTH] Error in request"
           error(msg)
-          return
         })
     }).listen(this.config.AUTH_PORT)
 
