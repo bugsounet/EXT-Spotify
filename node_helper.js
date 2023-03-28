@@ -154,7 +154,7 @@ module.exports = NodeHelper.create({
       this.spotify.start()
     } catch (e) {
       let error = "SPOTIFY: tokenSpotify.json file not found !"
-      console.log("Error From library: " + e)
+      console.log("[SPOTIFY] Error From library: " + e)
       this.sendSocketNotification("WARNING" , {  message: error })
     }
   },
@@ -207,7 +207,7 @@ module.exports = NodeHelper.create({
           this.sendSocketNotification("WARNING" , { message: "SpotifyNoResult" })
         }
       } else { //when fail
-        console.log("Search and Play failed !")
+        console.log("[SPOTIFY] Search and Play failed !")
         this.sendSocketNotification("WARNING" , { message: "SpotifySearchFailed" })
       }
     })

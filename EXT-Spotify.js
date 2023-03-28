@@ -205,7 +205,6 @@ Module.register("EXT-Spotify", {
     return [
       "EXT-Spotify.css",
       "https://cdn.materialdesignicons.com/5.2.45/css/materialdesignicons.min.css",
-      "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css",
       "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css",
       "https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@3.0/dist/svg.min.js",
     ]
@@ -232,12 +231,10 @@ Module.register("EXT-Spotify", {
 
   notificationReceived: function(noti, payload, sender) {
     switch(noti) {
-      case "DOM_OBJECTS_CREATED":
-        this.sendSocketNotification("INIT", this.configHelper)
-        if (this.SCL) this.CanvasLyrics.prepare()
-        break
-      case "GAv5_READY":
-        if (sender.name == "MMM-GoogleAssistant") {
+      case "GW_READY":
+        if (sender.name == "Gateway") {
+          this.sendSocketNotification("INIT", this.configHelper)
+          if (this.SCL) this.CanvasLyrics.prepare()
           this.sendNotification("EXT_HELLO", this.name)
           if (this.config.forceSCL) setTimeout( () => { this.sendNotification("EXT_SPOTIFY-SCL_FORCED", true) } ,1000)
         }
