@@ -2,7 +2,7 @@
 // Spotify library
 // Developers : Seongnoh Sean Yi (eouia0819@gmail.com)
 //              bugsounet (bugsounet@bugsounet.fr)
-// v1.2.0: 26/09/2022
+// v1.3.0: 29/03/2023
 
 const fs = require("fs")
 const path = require("path")
@@ -165,7 +165,6 @@ class Spotify {
       headers: {
         'Authorization': "Bearer " + this.token.access_token
       },
-
     }
     if (bodyParam) authOptions.data = bodyParam
     if (qsParam) authOptions.params = qsParam
@@ -179,6 +178,11 @@ class Spotify {
         .catch (error => {
           _Debug("API Request fail on :", api, error.toString())
           if (cb) {
+            if (error.response) {
+              if (error.response.status == 404 && error.response.data) {
+                return cb(error.response.status, null, error.response.data)
+              }
+            }
             _Debug("Retry in 5 sec...")
             this.retryTimer = setTimeout(() => { cb("400", error, null) }, 5000)
           }
