@@ -4,7 +4,7 @@ Extented for `MMM-GoogleAssistant`
 
 This plugin show current playback of any devices
 
-This module is an Extented plugins for `MMM-GoogleAssistant`
+This plugin is an Extented plugins for `MMM-GoogleAssistant`
 
 In addition, you can use some plugins:
  * `EXT-Alert` for display some information or error on your screen (Optional)
