@@ -2,8 +2,6 @@
 
 Extented for `MMM-GoogleAssistant`
 
-EXT-Spotify is a module for the [MagicMirror](https://github.com/MichMich/MagicMirror) project by [Michael Teeuw](https://github.com/MichMich).
-
 This module show current playback of any devices
 
 This module is an Extented plugins for `MMM-GoogleAssistant`
