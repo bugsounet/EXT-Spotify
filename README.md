@@ -2,7 +2,7 @@
 
 Extented for `MMM-GoogleAssistant`
 
-This module show current playback of any devices
+This plugin show current playback of any devices
 
 This module is an Extented plugins for `MMM-GoogleAssistant`
 
