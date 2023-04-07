@@ -62,7 +62,7 @@ class Spotify {
       dom.classList.remove("animate__flipInX")
       dom.classList.add("animate__flipOutX")
       dom.addEventListener('animationend', (e) => {
-        if (e.animationName == "flipOutX" && e.path[0].id == "EXT_SPOTIFY") {
+        if (e.animationName == "flipOutX") {
           dom.classList.add("inactive")
         }
         e.stopPropagation()
