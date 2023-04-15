@@ -43,8 +43,7 @@ Module.register("EXT-Spotify", {
     this.SpotifyCurrentID = null
     /** Search player **/
     let Librespot = config.modules.find(m => m.module == "EXT-Librespot")
-    let Raspotify = config.modules.find(m => m.module == "EXT-Raspotify")
-    if ((Librespot && !Librespot.disabled) || (Raspotify && !Raspotify.disabled)) {
+    if (Librespot && !Librespot.disabled) {
       this.Player.usePlayer = true
       logSpotify("Player Found!")
       if (Librespot) {
@@ -56,17 +55,6 @@ Module.register("EXT-Spotify", {
         } catch (e) { }
         try {
           this.Player.deviceName = Librespot.config.deviceName ? Librespot.config.deviceName : "MagicMirror"
-        } catch (e) { }
-      }
-      else if (Raspotify) {
-        try {
-          this.Player.minVolume = Raspotify.config.minVolume ? Raspotify.config.minVolume : 30
-        } catch (e) { }
-        try {
-          this.Player.maxVolume = Raspotify.config.maxVolume ? Raspotify.config.maxVolume : 100
-        } catch (e) { }
-        try {
-          this.Player.deviceName = Raspotify.config.deviceName ? Raspotify.config.deviceName : "MagicMirror"
         } catch (e) { }
       }
     }
