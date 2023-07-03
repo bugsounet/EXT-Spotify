@@ -400,7 +400,7 @@ Module.register("EXT-Spotify", {
     let SpotifyCLWrapper = document.getElementById("EXT_SPOTIFYCL")
     if (hide) {
       MM.getModules().enumerate((module) => {
-        module.hide(200, {lockString: "EXT-SPOTIFY_LOCKED"})
+        module.hide(200, () => {}, {lockString: "EXT-SPOTIFY_LOCKED"})
       })
       SpotifyCLWrapper.classList.remove("animate__backOutRight")
       SpotifyCLWrapper.style.animationFillMode = "inherit"
@@ -412,12 +412,13 @@ Module.register("EXT-Spotify", {
       SpotifyCLWrapper.style.animationFillMode = "both"
       SpotifyCLWrapper.classList.add("animate__backOutRight")
       SpotifyCLWrapper.addEventListener('animationend', (e) => {
-        if (e.animationName == "backOutRight" && e.path[0].id == "EXT_SPOTIFYCL") {
+        if (e.animationName == "backOutRight") {
           MM.getModules().enumerate((module)=> {
-            module.show(200, {lockString: "EXT-SPOTIFY_LOCKED"})
+            module.show(200, () => {}, {lockString: "EXT-SPOTIFY_LOCKED"})
           })
           SpotifyCLWrapper.style.display= "none"
         }
+        e.stopPropagation()
       }, {once: true})
     }
   },
