@@ -1,7 +1,7 @@
 {
   "name": "EXT-Spotify",
-  "version": "2.3.0",
-  "rev": "230415",
+  "version": "2.3.1",
+  "rev": "230704",
   "description": "An embedded Spotify Player for MagicMirror.",
   "main": "EXT-Spotify.js",
   "scripts": {
@@ -27,14 +27,14 @@
     "url": "https://github.com/bugsounet/EXT-Spotify"
   },
   "homepage": "https://wiki.bugsounet.fr/en/EXT-Spotify",
+  "engines": {
+    "node": ">=16.14.0"
+  },
   "dependencies": {
-    "check-node-version": "^4.2.1",
     "express": "^4.17.1",
-    "glob": "^9.0.1",
+    "glob": "^10.3.1",
     "minify": "^9.2.0",
-    "moment": "^2.27.0",
     "node-fetch": "^3.3.1",
-    "open": "^7.0.4",
-    "path": "^0.12.7"
+    "open": "^7.0.4"
   }
 }
