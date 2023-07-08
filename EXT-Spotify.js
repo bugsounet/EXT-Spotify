@@ -1,7 +1,7 @@
 /**
- ** Module : EXT-Spotify
+ ** Plugin: EXT-Spotify
  ** @bugsounet
- ** ©09/2022
+ ** 07/2023
  ** support: https://forum.bugsounet.fr
  **/
 
@@ -208,7 +208,8 @@ Module.register("EXT-Spotify", {
       nl: "translations/nl.json",
       pt: "translations/pt.json",
       ko: "translations/ko.json",
-      el: "translations/el.json"
+      el: "translations/el.json",
+      "zh-cn": "translations/zh-cn.json"
     }
   },
 

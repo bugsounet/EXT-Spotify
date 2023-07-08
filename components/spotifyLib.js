@@ -2,13 +2,12 @@
 // Spotify library
 // Developers : Seongnoh Sean Yi (eouia0819@gmail.com)
 //              bugsounet (bugsounet@bugsounet.fr)
-// v1.3.0: 29/03/2023
+
 
 const fs = require("fs")
 const path = require("path")
 const axios = require("axios")
 const querystring = require("querystring")
-const opn = require("open")
 const express = require("express")
 const app = express()
 const moment = require("moment")
@@ -277,7 +276,7 @@ class Spotify {
     this.doRequest("/v1/me/player/seek", "PUT", { position_ms: 0 }, null, cb)
   }
 
-  authFlow(afterCallback = () => {}, error = () => {}) {
+  async authFlow(afterCallback = () => {}, error = () => {}) {
     var redirect_uri = this.config.AUTH_DOMAIN + ":" + this.config.AUTH_PORT + this.config.AUTH_PATH
 
     if (!this.config.CLIENT_ID) {
@@ -334,11 +333,18 @@ class Spotify {
         show_dialog: true
       })
 
+    const open = await loadOpen()
     console.log("[SPOTIFY_AUTH] Opening the browser for authentication on Spotify...")
-    opn(url).catch(() => {
+    open(url).catch(() => {
       console.log('[SPOTIFY_AUTH] Failed to automatically open the URL. Copy/paste this in your browser:\n', url)
     })
   }
 }
+
+// import Open library and use default function only
+async function loadOpen() {
+  const loaded = await import('open');
+  return loaded.default;
+};
 
 module.exports = Spotify
