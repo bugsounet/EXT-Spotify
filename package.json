@@ -1,12 +1,12 @@
 {
   "name": "EXT-Spotify",
-  "version": "2.3.2",
-  "rev": "230708",
+  "version": "2.3.3",
+  "rev": "230723",
   "description": "An embedded Spotify Player for MagicMirror.",
   "main": "EXT-Spotify.js",
   "scripts": {
     "preinstall": "installer/preinstall.sh",
-    "postinstall": "installer/postinstall.sh",
+    "postinstall": "installer/postinstall.sh -m -b",
     "update": "installer/update.sh",
     "token": "installer/token.sh",
     "reset": "git reset --hard",
@@ -31,9 +31,9 @@
     "node": ">=16.14.0"
   },
   "dependencies": {
+    "esbuild": "^0.18.16",
     "express": "^4.17.1",
-    "glob": "^10.3.1",
-    "minify": "^9.2.0",
+    "glob": "^10.3.3",
     "node-fetch": "^3.3.1",
     "open": "^9.1.0"
   }
