@@ -3,6 +3,15 @@
 # | npm preinstall |
 # +----------------+
 
+dependencies=
+
+while getopts ":d:" option; do
+  case $option in
+    d) # -d option for install dependencies
+       dependencies=($OPTARG);;
+  esac
+done
+
 # get the installer directory
 Installer_get_current_dir () {
   SOURCE="${BASH_SOURCE[0]}"
@@ -52,7 +61,7 @@ if  [ "$platform" == "osx" ]; then
   echo
   exit 255
 else
-  if  [ "$os_name" == "raspbian" ] && [ "$os_version" -lt 10 ]; then
+  if  [ "$os_name" == "raspbian" ] && [ "$os_version" -lt 11 ]; then
     Installer_error "OS Detected: $OSTYPE ($os_name $os_version $arch)"
     Installer_error "Unfortunately, this module is not compatible with your OS"
     Installer_error "Try to update your OS to the lasted version of raspbian"
@@ -64,5 +73,9 @@ else
 fi
 
 echo
-Installer_info "Installing all npm libraries..."
-
+#check dependencies
+if [[ -n $dependencies ]]; then
+  Installer_info "Checking all dependencies..."
+  Installer_update_dependencies || exit 255
+  Installer_success "All Dependencies needed are installed !"
+fi
