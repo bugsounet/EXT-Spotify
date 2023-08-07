@@ -31,7 +31,7 @@
     "node": ">=16.14.0"
   },
   "dependencies": {
-    "esbuild": "^0.18.17",
+    "esbuild": "^0.18.18",
     "express": "^4.17.1",
     "glob": "^10.3.3",
     "node-fetch": "^3.3.2",
