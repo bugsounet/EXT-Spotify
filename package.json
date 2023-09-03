@@ -33,7 +33,7 @@
   "dependencies": {
     "esbuild": "^0.18.20",
     "express": "^4.17.1",
-    "glob": "^10.3.3",
+    "glob": "^10.3.4",
     "node-fetch": "^3.3.2",
     "open": "^9.1.0"
   }
