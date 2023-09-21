@@ -7,7 +7,6 @@
 const fs = require("fs")
 const path = require("path")
 const axios = require("axios")
-const querystring = require("querystring")
 const express = require("express")
 const app = express()
 const moment = require("moment")
@@ -323,15 +322,16 @@ class Spotify {
         })
     }).listen(this.config.AUTH_PORT)
 
-    let url = "https://accounts.spotify.com/authorize?" +
-      querystring.stringify({
-        response_type: 'code',
-        client_id: this.config.CLIENT_ID,
-        scope: this.config.SCOPE,
-        redirect_uri: redirect_uri,
-        state: Date.now(),
-        show_dialog: true
-      })
+    const params = new URLSearchParams({
+      response_type: 'code',
+      client_id: this.config.CLIENT_ID,
+      scope: this.config.SCOPE,
+      redirect_uri: redirect_uri,
+      state: Date.now(),
+      show_dialog: true
+    })
+
+    let url = "https://accounts.spotify.com/authorize?" + params
 
     const open = await loadOpen()
     console.log("[SPOTIFY_AUTH] Opening the browser for authentication on Spotify...")
