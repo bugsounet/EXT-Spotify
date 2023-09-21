@@ -49,8 +49,6 @@ class CanvasLyrics {
     var spotifyCL = document.createElement("div")
     spotifyCL.id = "EXT_SPOTIFYCL"
     spotifyCL.style.display= "none"
-    spotifyCL.className= "animate__animated"
-    spotifyCL.style.setProperty('--animate-duration', '1s')
 
     const CLBackground = document.createElement("div")
     CLBackground.id = "EXT_SPOTIFYCL_BACKGROUND"

@@ -11,6 +11,8 @@ class Spotify {
     this.connected = false
     this.timer = null
     this.ads = false
+    this.hide = (...args) => this.config.hide(...args)
+    this.show = (...args) => this.config.show(...args)
     console.log("[SPOTIFY] Spotify Class Loaded")
   }
 
@@ -18,10 +20,9 @@ class Spotify {
   prepare() {
     var viewDom = document.createElement("div")
     viewDom.id = "EXT_SPOTIFY"
-    viewDom.className= "inactive animate__animated"
     if (this.config.mini) viewDom.classList.add("mini")
     else viewDom.classList.add("big")
-    viewDom.style.setProperty('--animate-duration', '1s')
+    viewDom.classList.add("inactive")
 
     viewDom.appendChild(this.getHTMLElementWithID('div', "EXT_SPOTIFY_BACKGROUND"))
 
@@ -59,14 +60,10 @@ class Spotify {
       this.spotifyStatus(false)
       this.spotifyPlaying(false)
 
-      dom.classList.remove("animate__flipInX")
-      dom.classList.add("animate__flipOutX")
-      dom.addEventListener('animationend', (e) => {
-        if (e.animationName == "flipOutX") {
-          dom.classList.add("inactive")
-        }
-        e.stopPropagation()
-      }, {once: true})
+      this.hide(1000, () => {}, {lockString: "EXT-SPOTIFY_LOCK"})
+      setTimeout(() => {
+        dom.classList.add("inactive")
+      }, 1000)
     }
     if (!this.connected && status) {
       if (this.debug) console.log("[SPOTIFY] Connected")
@@ -74,9 +71,7 @@ class Spotify {
       this.spotifyStatus(true)
 
       dom.classList.remove("inactive")
-
-      dom.classList.remove("animate__flipOutX")
-      dom.classList.add("animate__flipInX")
+      this.show(1000, () => {}, {lockString: "EXT-SPOTIFY_LOCK"})
     }
   }
 
