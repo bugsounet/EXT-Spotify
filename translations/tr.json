@@ -1,0 +1,9 @@
+{
+  "SpotifyNoResult": "Spotify: Sonuç bulunamadı",
+  "SpotifySearchFailed": "Spotify: Arama ve Oynatma başarısız oldu",
+  "SpotifyListenText": "Dinleniyor",
+  "SpotifySearchTypePlaylist": "çalma listesi",
+  "SpotifySearchTypeAlbum": "albüm",
+  "SpotifySearchTypeTrack": "takip ettiklerin",
+  "SpotifySearchTypeArtist": "sanatçı"
+}
