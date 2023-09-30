@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "axios": "^1.5.1",
-    "esbuild": "^0.19.3",
+    "esbuild": "^0.19.4",
     "express": "^4.17.1",
     "glob": "^10.3.10",
     "open": "^9.1.0"
