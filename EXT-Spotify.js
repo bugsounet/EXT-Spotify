@@ -1,13 +1,15 @@
 /**
  ** Plugin: EXT-Spotify
  ** @bugsounet
- ** 07/2023
+ ** 09/2023
  ** support: https://forum.bugsounet.fr
  **/
 
 logSpotify = (...args) => { /* do nothing */ }
 
 Module.register("EXT-Spotify", {
+  requiresVersion: "2.25.0",
+
   defaults: {
     debug: false,
     mini: true,
@@ -173,7 +175,9 @@ Module.register("EXT-Spotify", {
       debug: this.config.debug,
       deviceDisplay: this.translate("SpotifyListenText"),
       mini: this.config.mini,
-      noCanvas: this.config.noCanvas
+      noCanvas: this.config.noCanvas,
+      hide: (...args) => this.hide(...args),
+      show: (...args) => this.show(...args)
     }
     logSpotify("configHelper:" , this.configHelper)
     this.Spotify = new Spotify(this.configClass, callbacks)
@@ -209,7 +213,8 @@ Module.register("EXT-Spotify", {
       pt: "translations/pt.json",
       ko: "translations/ko.json",
       el: "translations/el.json",
-      "zh-cn": "translations/zh-cn.json"
+      "zh-cn": "translations/zh-cn.json",
+      tr: "translations/tr.json"
     }
   },
 
@@ -403,24 +408,18 @@ Module.register("EXT-Spotify", {
       MM.getModules().enumerate((module) => {
         module.hide(200, () => {}, {lockString: "EXT-SPOTIFY_LOCKED"})
       })
-      SpotifyCLWrapper.classList.remove("animate__backOutRight")
-      SpotifyCLWrapper.style.animationFillMode = "inherit"
-      SpotifyCLWrapper.classList.add("animate__backInLeft")
+      removeAnimateCSS("EXT_SPOTIFYCL", "backOutRight")
+      addAnimateCSS("EXT_SPOTIFYCL", "backInLeft",1)
       SpotifyCLWrapper.style.display= "block"
-    }
-    else {
-      SpotifyCLWrapper.classList.remove("animate__backInLeft")
-      SpotifyCLWrapper.style.animationFillMode = "both"
-      SpotifyCLWrapper.classList.add("animate__backOutRight")
-      SpotifyCLWrapper.addEventListener('animationend', (e) => {
-        if (e.animationName == "backOutRight") {
-          MM.getModules().enumerate((module)=> {
-            module.show(200, () => {}, {lockString: "EXT-SPOTIFY_LOCKED"})
-          })
-          SpotifyCLWrapper.style.display= "none"
-        }
-        e.stopPropagation()
-      }, {once: true})
+    } else {
+      removeAnimateCSS("EXT_SPOTIFYCL", "backInLeft")
+      addAnimateCSS("EXT_SPOTIFYCL", "backOutRight",1)
+      setTimeout(() => {
+        SpotifyCLWrapper.style.display= "none"
+        MM.getModules().enumerate((module)=> {
+          module.show(200, () => {}, {lockString: "EXT-SPOTIFY_LOCKED"})
+        })
+      },1000)
     }
   },
 
