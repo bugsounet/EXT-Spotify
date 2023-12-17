@@ -225,8 +225,8 @@ Module.register("EXT-Spotify", {
 
   notificationReceived: function(noti, payload, sender) {
     switch(noti) {
-      case "GW_READY":
-        if (sender.name == "Gateway") {
+      case "GA_READY":
+        if (sender.name == "MMM-GoogleAssistant") {
           this.sendSocketNotification("INIT", this.configHelper)
           if (this.SCL) this.CanvasLyrics.prepare()
           this.sendNotification("EXT_HELLO", this.name)
