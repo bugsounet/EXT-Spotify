@@ -176,7 +176,8 @@ class Spotify {
       fetch(url, authOptions)
         .then(response => {
           status = response.status
-          if (status != 200) throw new Error(status)
+          if (status >= 400) throw new Error(status)
+          if (status == 204) return null
           return response.json()
         })
         .then(data => {
@@ -184,9 +185,9 @@ class Spotify {
           if (api !== "/v1/me/player" && type !== "GET") _Debug("API Requested:", api)
           if (cb) cb(status, null, data)
         })
-        .catch (error => { // /!\ to MIGRATE !!!
+        .catch (error => {
           _Debug("API Request fail on :", api, error.toString())
-          if (cb) {
+          if (cb) { // /!\ to MIGRATE !!!
             /*
             if (error.response) {
               if (error.response.status == 404 && error.response.data) {
