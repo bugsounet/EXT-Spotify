@@ -34,5 +34,5 @@ let Auth = new Spotify(config, null, true, true)
 Auth.authFlow(() => {
   console.log("[SPOTIFY_AUTH] Authorization is finished. Check ", config.TOKEN)
 }, (e) => {
-  console.log(e)
+  console.error(e)
 })

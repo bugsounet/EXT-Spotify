@@ -3,7 +3,6 @@
 // Developers : Seongnoh Sean Yi (eouia0819@gmail.com)
 //              bugsounet (bugsounet@bugsounet.fr)
 
-
 const fs = require("fs")
 const path = require("path")
 const axios = require("axios")
@@ -116,7 +115,7 @@ class Spotify {
   }
 
   isExpired() {
-    return (Date.now() >= this.token.expires_at);
+    return (Date.now() >= this.token.expires_at)
   }
 
   refreshToken(cb = null) {
@@ -126,22 +125,24 @@ class Spotify {
       grant_type: "refresh_token",
       refresh_token: refresh_token
     })
+
     var authOptions = {
-      url: 'https://accounts.spotify.com/api/token',
       method: "POST",
       headers: {
+        "Content-Type": 'application/x-www-form-urlencoded',
         'Authorization': this.authorizationSeed
       },
-      data: data.toString(),
-      validateStatus: function (status) {
-        return status == 200 // Resolve only if the status code is 200
-      }
+      body: data.toString()
     }
 
-    axios(authOptions)
-      .then(response => {
-        response.data.refresh_token = this.token.refresh_token
-        this.writeToken(response.data, cb)
+    fetch('https://accounts.spotify.com/api/token', authOptions)
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) console.error("[SPOTIFY:ERROR] Token refreshing failed:", data)
+        else {
+          data.refresh_token = this.token.refresh_token
+          this.writeToken(data, cb)
+        }
       })
       .catch(error => {
         console.error("[SPOTIFY:ERROR] Token refreshing failed:", error)
@@ -275,18 +276,18 @@ class Spotify {
     this.doRequest("/v1/me/player/seek", "PUT", { position_ms: 0 }, null, cb)
   }
 
-  async authFlow(afterCallback = () => {}, error = () => {}) {
+  async authFlow(afterCallback = () => {}, err = () => {}) {
     var redirect_uri = this.config.AUTH_DOMAIN + ":" + this.config.AUTH_PORT + this.config.AUTH_PATH
 
     if (!this.config.CLIENT_ID) {
       let msg = "[SPOTIFY_AUTH] CLIENT_ID doesn't exist."
-      error(msg)
+      err(msg)
       return
     }
 
     if (this.token) {
       let msg = "[SPOTIFY_AUTH] You already have a token. no need to auth."
-      error(msg)
+      err(msg)
       return
     }
 
@@ -298,27 +299,29 @@ class Spotify {
         grant_type: "authorization_code"
       })
       let authOptions ={
-        url: "https://accounts.spotify.com/api/token",
-        method: "post",
-        data: data.toString(),
+        method: "POST",
+        body: data.toString(),
         headers: {
-          Authorization: this.authorizationSeed
-        },
-        validateStatus: function (status) {
-          return status == 200
+          "Content-Type": 'application/x-www-form-urlencoded',
+          "Authorization": this.authorizationSeed
         }
       }
-
-      axios(authOptions)
-        .then(response => {
-          this.writeToken(response.data)
+      fetch("https://accounts.spotify.com/api/token", authOptions)
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            console.error("[SPOTIFY_AUTH] Error ", data)
+            server.close()
+            res.send(`Error: ${data.error_description}`)
+            throw new Error(data.error_description)
+          }
+          this.writeToken(data)
           server.close()
           res.send(`${this.config.TOKEN} would be created. Check it`)
           afterCallback()
         })
         .catch (error => {
-          let msg = "[SPOTIFY_AUTH] Error in request"
-          error(msg)
+          err("[SPOTIFY_AUTH] Error in request")
         })
     }).listen(this.config.AUTH_PORT)
 
