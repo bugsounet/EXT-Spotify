@@ -5,7 +5,6 @@
 
 const fs = require("fs")
 const path = require("path")
-const axios = require("axios")
 const express = require("express")
 const app = express()
 const moment = require("moment")
@@ -158,30 +157,43 @@ class Spotify {
       console.log("[SPOTIFY:ERROR] Token Error !", this.config.TOKEN)
       return
     }
+    let url = "https://api.spotify.com" + api
     var authOptions = {
-      url: "https://api.spotify.com" + api,
       method: type,
       headers: {
         'Authorization': "Bearer " + this.token.access_token
       },
     }
-    if (bodyParam) authOptions.data = bodyParam
-    if (qsParam) authOptions.params = qsParam
+    if (bodyParam) authOptions.body = bodyParam
+    if (qsParam) {
+      let Params = new URLSearchParams(qsParam)
+      url = url + "/?" + Params
+    }
+    _Debug("--->", url)
 
     var req = () => {
-      axios(authOptions)
+      let status = null
+      fetch(url, authOptions)
         .then(response => {
-          if (api !== "/v1/me/player" && type !== "GET") _Debug("API Requested:", api)
-          if (cb) cb(response.status, null, response.data)
+          status = response.status
+          if (status != 200) throw new Error(status)
+          return response.json()
         })
-        .catch (error => {
+        .then(data => {
+          _Debug("Status:", status)
+          if (api !== "/v1/me/player" && type !== "GET") _Debug("API Requested:", api)
+          if (cb) cb(status, null, data)
+        })
+        .catch (error => { // /!\ to MIGRATE !!!
           _Debug("API Request fail on :", api, error.toString())
           if (cb) {
+            /*
             if (error.response) {
               if (error.response.status == 404 && error.response.data) {
                 return cb(error.response.status, null, error.response.data)
               }
             }
+            */
             _Debug("Retry in 5 sec...")
             this.retryTimer = setTimeout(() => { cb("400", error, null) }, 5000)
           }
