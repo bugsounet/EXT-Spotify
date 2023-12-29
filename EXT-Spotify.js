@@ -41,6 +41,7 @@ Module.register("EXT-Spotify", {
     this.SCL = false
     this.SPOTIFYCL = false
     this.ForceSCL = false
+    this.SPOTIFYCL_Ready = false
     this.init = false
     this.SpotifyCurrentID = null
     /** Search player **/
@@ -328,6 +329,9 @@ Module.register("EXT-Spotify", {
         if (sender.name != "EXT-SpotifyCanvasLyrics") return
         this.CanvasLyrics.loadLyrics(payload)
         break
+      case "EXT_SCL-READY":
+        this.SPOTIFYCL_Ready = true
+        break
     }
   },
 
@@ -336,7 +340,7 @@ Module.register("EXT-Spotify", {
       /** Spotify module **/
       case "SPOTIFY_PLAY":
         this.Spotify.updateCurrentSpotify(payload)
-        if (this.SCL && this.init && (this.ForceSCL || (payload.device && payload.device.name == this.Player.deviceName))) {
+        if (this.SCL && this.init && this.SPOTIFYCL_Ready && (this.ForceSCL || (payload.device && payload.device.name == this.Player.deviceName))) {
           this.CanvasLyrics.updateCurrentSpotify(payload)
           this.HideOrShow(true)
           this.SPOTIFYCL = true
