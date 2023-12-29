@@ -164,37 +164,32 @@ class Spotify {
         'Authorization': "Bearer " + this.token.access_token
       },
     }
-    if (bodyParam) authOptions.body = bodyParam
+    if (bodyParam) authOptions.body = JSON.stringify(bodyParam)
     if (qsParam) {
       let Params = new URLSearchParams(qsParam)
       url = url + "/?" + Params
     }
-    _Debug("--->", url)
 
     var req = () => {
       let status = null
+      let statusText = null
       fetch(url, authOptions)
         .then(response => {
           status = response.status
-          if (status >= 400) throw new Error(status)
-          if (status == 204) return null
+          statusText = response.statusText
+          if (status == 400) throw new Error(status)
+          if (status == 204 || status == 202) return null
           return response.json()
         })
         .then(data => {
-          _Debug("Status:", status)
           if (api !== "/v1/me/player" && type !== "GET") _Debug("API Requested:", api)
           if (cb) cb(status, null, data)
         })
         .catch (error => {
-          _Debug("API Request fail on :", api, error.toString())
-          if (cb) { // /!\ to MIGRATE !!!
-            /*
-            if (error.response) {
-              if (error.response.status == 404 && error.response.data) {
-                return cb(error.response.status, null, error.response.data)
-              }
-            }
-            */
+          _Debug("API Request fail on :", api)
+          if (status) _Debug("---> Error", status, statusText, "qsParam:", qsParam, "authOptions:", authOptions)
+          if (cb) {
+            _Debug("!!!---> Detail", error)
             _Debug("Retry in 5 sec...")
             this.retryTimer = setTimeout(() => { cb("400", error, null) }, 5000)
           }
