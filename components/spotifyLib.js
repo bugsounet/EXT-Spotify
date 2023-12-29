@@ -137,8 +137,10 @@ class Spotify {
     fetch('https://accounts.spotify.com/api/token', authOptions)
       .then(response => response.json())
       .then(data => {
-        if (data.error) console.error("[SPOTIFY:ERROR] Token refreshing failed:", data)
-        else {
+        if (data.error) {
+          console.error("[SPOTIFY:ERROR] Token refreshing failed:", data)
+          if (cb) cb()
+        } else {
           data.refresh_token = this.token.refresh_token
           this.writeToken(data, cb)
         }
