@@ -231,7 +231,6 @@ Module.register("EXT-Spotify", {
           this.sendSocketNotification("INIT", this.configHelper)
           if (this.SCL) this.CanvasLyrics.prepare()
           this.sendNotification("EXT_HELLO", this.name)
-          if (this.config.forceSCL) setTimeout( () => { this.sendNotification("EXT_SPOTIFY-SCL_FORCED", true) } ,1000)
         }
         break
       case "ASSISTANT_LISTEN":
@@ -331,6 +330,7 @@ Module.register("EXT-Spotify", {
         break
       case "EXT_SCL-READY":
         this.SPOTIFYCL_Ready = true
+        if (this.config.forceSCL) this.sendNotification("EXT_SPOTIFY-SCL_FORCED", true)
         break
     }
   },
