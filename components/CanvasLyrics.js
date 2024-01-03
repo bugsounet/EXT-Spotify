@@ -387,6 +387,10 @@ class CanvasLyrics {
       canvas.removeAttribute('src')
       canvas.load()
       if (this.vertical) back.classList.remove("hidden")
+      this.alert({
+        message: !result.success ? result.message : "No Animated Canvas found",
+        type: "warning"
+      })
     } else {
       if (this.vertical) back.classList.add("hidden")
       canvas.src= result.canvas.url
@@ -534,6 +538,11 @@ class CanvasLyrics {
         }
         lyrics.push(lastLines)
         console.log("[SPOTIFY][Lyrics] Lyrics Loaded")
+      } else {
+        this.alert({
+          message: "Lyrics: " +  result.message,
+          type: "warning"
+        })
       }
       if (error) {
         this.alert({

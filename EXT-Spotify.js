@@ -41,6 +41,7 @@ Module.register("EXT-Spotify", {
     this.SCL = false
     this.SPOTIFYCL = false
     this.ForceSCL = false
+    this.SPOTIFYCL_Ready = false
     this.init = false
     this.SpotifyCurrentID = null
     /** Search player **/
@@ -225,12 +226,11 @@ Module.register("EXT-Spotify", {
 
   notificationReceived: function(noti, payload, sender) {
     switch(noti) {
-      case "GW_READY":
-        if (sender.name == "Gateway") {
+      case "GA_READY":
+        if (sender.name == "MMM-GoogleAssistant") {
           this.sendSocketNotification("INIT", this.configHelper)
           if (this.SCL) this.CanvasLyrics.prepare()
           this.sendNotification("EXT_HELLO", this.name)
-          if (this.config.forceSCL) setTimeout( () => { this.sendNotification("EXT_SPOTIFY-SCL_FORCED", true) } ,1000)
         }
         break
       case "ASSISTANT_LISTEN":
@@ -328,6 +328,10 @@ Module.register("EXT-Spotify", {
         if (sender.name != "EXT-SpotifyCanvasLyrics") return
         this.CanvasLyrics.loadLyrics(payload)
         break
+      case "EXT_SCL-READY":
+        this.SPOTIFYCL_Ready = true
+        if (this.config.forceSCL) this.sendNotification("EXT_SPOTIFY-SCL_FORCED", true)
+        break
     }
   },
 
@@ -336,7 +340,7 @@ Module.register("EXT-Spotify", {
       /** Spotify module **/
       case "SPOTIFY_PLAY":
         this.Spotify.updateCurrentSpotify(payload)
-        if (this.SCL && this.init && (this.ForceSCL || (payload.device && payload.device.name == this.Player.deviceName))) {
+        if (this.SCL && this.init && this.SPOTIFYCL_Ready && (this.ForceSCL || (payload.device && payload.device.name == this.Player.deviceName))) {
           this.CanvasLyrics.updateCurrentSpotify(payload)
           this.HideOrShow(true)
           this.SPOTIFYCL = true
