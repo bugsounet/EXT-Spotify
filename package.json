@@ -39,7 +39,7 @@
     "esbuild": "^0.20.1",
     "express": "^4.18.3",
     "glob": "^10.3.10",
-    "open": "^10.0.4"
+    "open": "^10.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^8.57.0",
