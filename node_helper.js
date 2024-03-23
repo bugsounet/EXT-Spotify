@@ -40,7 +40,7 @@ module.exports = NodeHelper.create({
             else {
               logSpotify("RETRY: DONE_PLAY");
               this.retryPlayerCount = 0;
-              if (this.config.player.usePlayer) this.sendSocketNotification("INFORMATION", { message: "PlayerConnected", values: this.config.player.deviceName });
+              if (this.config.player.usePlayer) this.sendSocketNotification("SUCCESS", { message: "PlayerConnected", values: this.config.player.deviceName });
             }
           });
         }, 3000);
