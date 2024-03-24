@@ -399,6 +399,13 @@ Module.register("EXT-Spotify", {
           icon: "modules/EXT-Spotify/components/Spotify-Logo.png"
         });
         break;
+      case "SUCCESS":
+        this.sendNotification("EXT_ALERT", {
+          type: "success",
+          message: this.translate(payload.message, { VALUES: payload.values }),
+          icon: "modules/EXT-Spotify/components/Spotify-Logo.png"
+        });
+        break;
       case "PLAYER_RECONNECT":
         this.sendNotification("EXT_PLAYER-SPOTIFY_RECONNECT");
         break;
