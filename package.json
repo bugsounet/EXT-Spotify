@@ -1,7 +1,7 @@
 {
   "name": "EXT-Spotify",
-  "version": "2.6.1",
-  "rev": "240323",
+  "version": "2.6.2",
+  "rev": "240421",
   "description": "An embedded Spotify Player for MagicMirror.",
   "main": "EXT-Spotify.js",
   "scripts": {
@@ -37,13 +37,13 @@
   },
   "dependencies": {
     "esbuild": "^0.20.2",
-    "express": "^4.18.3",
-    "glob": "^10.3.10",
+    "express": "^4.19.2",
+    "glob": "^10.3.12",
     "open": "^10.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^8.57.0",
-    "@stylistic/eslint-plugin": "^1.7.0",
+    "@stylistic/eslint-plugin": "^1.7.2",
     "eslint": "^8.57.0",
     "eslint-plugin-import": "^2.29.1"
   }
