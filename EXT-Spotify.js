@@ -71,6 +71,7 @@ Module.register("EXT-Spotify", {
     this.spotify= {
       connected: false,
       player: false,
+      is_playing: false,
       currentVolume: 0,
       targetVolume: this.Player.maxVolume,
       repeat: null,
@@ -280,6 +281,10 @@ Module.register("EXT-Spotify", {
       case "EXT_SPOTIFY-PAUSE":
         this.SpotifyCommand("PAUSE");
         break;
+      case "EXT_SPOTIFY-PLAY-TOGGLE":
+        if (this.spotify.connected && this.spotify.player && this.spotify.is_playing) this.SpotifyCommand("PAUSE");
+        else this.SpotifyCommand("PLAY", payload);
+        break;
       case "EXT_STOP":
         if (!this.spotify.connected) return; // don't force to stop if no device play...
         if (this.spotify.player) this.sendSocketNotification("SPOTIFY_STOP");
@@ -348,6 +353,7 @@ Module.register("EXT-Spotify", {
         } else this.Spotify.updateCurrentSpotify(payload);
         if (!this.spotify.connected) return; // don't check if not connected (use spotify callback)
         if (payload && payload.device && payload.device.name) {
+          this.spotify.is_playing = payload.is_playing;
           this.spotify.repeat = payload.repeat_state;
           this.spotify.shuffle = payload.shuffle_state;
           if (payload.device.name === this.configHelper.player.deviceName) {
