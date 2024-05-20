@@ -36,7 +36,7 @@
     "node": ">=18"
   },
   "dependencies": {
-    "esbuild": "^0.21.2",
+    "esbuild": "^0.21.3",
     "express": "^4.19.2",
     "glob": "^10.3.15",
     "open": "^10.1.0"
