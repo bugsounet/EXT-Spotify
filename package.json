@@ -1,7 +1,7 @@
 {
   "name": "EXT-Spotify",
-  "version": "2.7.0",
-  "rev": "240501",
+  "version": "2.8.0",
+  "rev": "240604",
   "description": "An embedded Spotify Player for MagicMirror.",
   "main": "EXT-Spotify.js",
   "scripts": {

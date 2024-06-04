@@ -160,11 +160,11 @@ class Spotify {
       console.log("[SPOTIFY:ERROR] Token Error !", this.config.TOKEN);
       return;
     }
-    let url = `https://api.spotify.com${  api}`;
+    let url = `https://api.spotify.com${api}`;
     var authOptions = {
       method: type,
       headers: {
-        Authorization: `Bearer ${  this.token.access_token}`
+        Authorization: `Bearer ${this.token.access_token}`
       }
     };
     if (bodyParam) authOptions.body = JSON.stringify(bodyParam);
