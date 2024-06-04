@@ -406,10 +406,12 @@ class CanvasLyrics {
       canvas.removeAttribute("src");
       canvas.load();
       if (this.vertical) back.classList.remove("hidden");
+      /*
       this.alert({
         message: !result.success ? result.message : "No Animated Canvas found",
         type: "warning"
       });
+      */
     } else {
       if (this.vertical) back.classList.add("hidden");
       canvas.src= result.canvas.url;
@@ -563,10 +565,10 @@ class CanvasLyrics {
       if (result.success) {
         result.lyrics.lines.forEach((lyric) => {
           let line = {
-            time: lyric.time,
-            words: lyric.words[0].string
+            time: lyric.startTimeMs,
+            words: lyric.words
           };
-          if (!lyric.time) error++;
+          if (!lyric.startTimeMs) error++;
           lyrics.push(line);
         });
         let lastLines = {
@@ -586,7 +588,7 @@ class CanvasLyrics {
           type: "warning"
         });
       }
-      if (error) {
+      if (error || result.lyrics.syncType === "UNSYNCED") {
         this.alert({
           message: "Lyrics are not sync with this title",
           type: "warning"
