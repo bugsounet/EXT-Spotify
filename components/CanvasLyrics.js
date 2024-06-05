@@ -588,7 +588,7 @@ class CanvasLyrics {
           type: "warning"
         });
       }
-      if (error || result.lyrics.syncType === "UNSYNCED") {
+      if (error || result.lyrics?.syncType === "UNSYNCED") {
         this.alert({
           message: "Lyrics are not sync with this title",
           type: "warning"
