@@ -177,13 +177,14 @@ class Spotify {
 
   updatePlaying (isPlaying) {
     const s = document.getElementById("EXT_SPOTIFY");
-
     if (isPlaying) {
       s.classList.add("playing");
       s.classList.remove("pausing");
+      this.spotifyPlaying(true);
     } else {
       s.classList.add("pausing");
       s.classList.remove("playing");
+      this.spotifyPlaying(false);
     }
   }
 
