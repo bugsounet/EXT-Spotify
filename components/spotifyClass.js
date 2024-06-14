@@ -53,12 +53,11 @@ class Spotify {
 
     clearTimeout(this.timer);
     this.timer = null;
-
+    this.spotifyPlaying(status);
     if (this.connected && !status) {
       if (this.debug) console.log("[SPOTIFY] Disconnected");
       this.connected = false;
       this.spotifyStatus(false);
-      this.spotifyPlaying(false);
 
       this.hide(1000, () => {}, { lockString: "EXT-SPOTIFY_LOCK" });
       setTimeout(() => {
@@ -177,7 +176,6 @@ class Spotify {
   }
 
   updatePlaying (isPlaying) {
-    this.spotifyPlaying(isPlaying);
     const s = document.getElementById("EXT_SPOTIFY");
 
     if (isPlaying) {
