@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "esbuild": "^0.23.1",
-    "express": "^4.19.2",
+    "express": "^4.21.0",
     "glob": "^10.4.5",
     "open": "^10.1.0"
   },
