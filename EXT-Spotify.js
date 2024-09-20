@@ -1,19 +1,17 @@
 /**
  ** Plugin: EXT-Spotify
  ** @bugsounet
- ** support: https://forum.bugsounet.fr
+ ** support: https://www.bugsounet.fr
  **/
 
 logSpotify = (...args) => { /* do nothing */ };
 
 Module.register("EXT-Spotify", {
-  requiresVersion: "2.25.0",
+  requiresVersion: "2.28.0",
 
   defaults: {
     debug: false,
     mini: true,
-    forceSCL: false,
-    noCanvas: false,
     updateInterval: 1000,
     idleInterval: 10000,
     CLIENT_ID: "",
@@ -37,10 +35,6 @@ Module.register("EXT-Spotify", {
       CLIENT_ID: this.config.CLIENT_ID,
       CLIENT_SECRET: this.config.CLIENT_SECRET
     };
-    this.SCL = false;
-    this.SPOTIFYCL = false;
-    this.ForceSCL = false;
-    this.SPOTIFYCL_Ready = false;
     this.init = false;
     this.SpotifyCurrentID = null;
     /** Search player **/
@@ -59,13 +53,6 @@ Module.register("EXT-Spotify", {
           this.Player.deviceName = Librespot.config.deviceName ? Librespot.config.deviceName : "MagicMirror";
         } catch (e) { }
       }
-    }
-    /** Search SpotifyCanvasLyrics **/
-    let SpotifyCanvasLyrics = config.modules.find((m) => m.module === "EXT-SpotifyCanvasLyrics");
-    if (SpotifyCanvasLyrics && !SpotifyCanvasLyrics.disabled) {
-      this.SCL = true;
-      if (this.config.forceSCL) this.ForceSCL= this.config.forceSCL;
-      logSpotify("EXT-SpotifyCanvasLyrics Found!");
     }
 
     this.spotify= {
@@ -89,19 +76,12 @@ Module.register("EXT-Spotify", {
           this.sendNotification("EXT_SPOTIFY-DISCONNECTED");
           this.spotify.connected = false;
           logSpotify("spotifyStatus: PLAYER Disconnected");
-          if (this.SCL) {
-            this.SPOTIFYCL = false;
-            this.HideOrShow(false);
-          }
           this.sendNotification("EXT_SPOTIFY-PLAYER_DISCONNECTED");
           this.spotify.player = false;
         }
       },
       spotifyPlaying: (play) => {
         this.sendNotification("EXT_SPOTIFY-PLAYING", play);
-      },
-      spotifyForceSCL: () => {
-        if (this.SCL) this.ForceSCL = true;
       },
       init: () => { this.init = true; },
       command: (command, param) => {
@@ -149,49 +129,30 @@ Module.register("EXT-Spotify", {
             break;
         }
       },
-      closeDisplay: () => {
-        this.ForceSCL = false;
-        this.SPOTIFYCL = false;
-        this.HideOrShow(false);
-      },
-      askDevices: () => {
-        this.sendSocketNotification("ASK_DEVICES");
-      },
       alert: (params) => {
         this.sendNotification("EXT_ALERT", params);
-      },
-      searchCL: (item) => {
-        if (!item || !item.id || (this.SpotifyCurrentID === item.id)) return;
-        this.SpotifyCurrentID = item.id;
-        this.sendNotification("EXT_SCL-GET_LYRICS" , this.SpotifyCurrentID);
-        if (!this.config.noCanvas) this.sendNotification("EXT_SCL-GET_CANVAS" , this.SpotifyCurrentID);
       }
     };
     this.configHelper = {
       visual: this.Visual,
       player: this.Player,
-      SCL: this.SCL,
       debug: this.config.debug
     };
     this.configClass = {
       debug: this.config.debug,
       deviceDisplay: this.translate("SpotifyListenText"),
       mini: this.config.mini,
-      noCanvas: this.config.noCanvas,
       hide: (...args) => this.hide(...args),
       show: (...args) => this.show(...args)
     };
     logSpotify("configHelper:" , this.configHelper);
     this.Spotify = new Spotify(this.configClass, callbacks);
-    if (this.SCL) this.CanvasLyrics = new CanvasLyrics(this.configClass, callbacks, this.Player);
   },
 
   getScripts () {
     return [
       "/modules/EXT-Spotify/components/spotifyClass.js",
-      "https://code.iconify.design/1/1.0.6/iconify.min.js",
-      "/modules/EXT-Spotify/components/CanvasLyrics.js",
-      "/modules/EXT-Spotify/components/JSPanel.js"
+      "https://code.iconify.design/1/1.0.6/iconify.min.js"
     ];
   },
 
@@ -199,8 +160,7 @@ Module.register("EXT-Spotify", {
     return [
       "EXT-Spotify.css",
       "https://cdn.materialdesignicons.com/5.2.45/css/materialdesignicons.min.css",
-      "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css",
-      "https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@3.0/dist/svg.min.js"
+      "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
     ];
   },
 
@@ -230,7 +190,6 @@ Module.register("EXT-Spotify", {
       case "GA_READY":
         if (sender.name === "MMM-GoogleAssistant") {
           this.sendSocketNotification("INIT", this.configHelper);
-          if (this.SCL) this.CanvasLyrics.prepare();
           this.sendNotification("EXT_HELLO", this.name);
         }
         break;
@@ -313,31 +272,6 @@ Module.register("EXT-Spotify", {
       case "EXT_SPOTIFY-SEEK":
         this.SpotifyCommand("SEEK", payload);
         break;
-      case "EXT_SPOTIFY-SCL":
-        if (!this.SCL) return;
-        this.ForceSCL = payload;
-        this.sendNotification("EXT_SPOTIFY-SCL_FORCED", payload);
-        if (!this.spotify.connected) return;
-        if (this.ForceSCL) {
-          this.HideOrShow(true);
-          this.SPOTIFYCL = true;
-        } else {
-          this.SPOTIFYCL = false;
-          this.HideOrShow(false);
-        }
-        break;
-      case "EXT_SCL-SEND_CANVAS":
-        if (sender.name !== "EXT-SpotifyCanvasLyrics") return;
-        this.CanvasLyrics.displayCanvas(payload);
-        break;
-      case "EXT_SCL-SEND_LYRICS":
-        if (sender.name !== "EXT-SpotifyCanvasLyrics") return;
-        this.CanvasLyrics.loadLyrics(payload);
-        break;
-      case "EXT_SCL-READY":
-        this.SPOTIFYCL_Ready = true;
-        if (this.config.forceSCL) this.sendNotification("EXT_SPOTIFY-SCL_FORCED", true);
-        break;
     }
   },
 
@@ -346,11 +280,7 @@ Module.register("EXT-Spotify", {
       /** Spotify module **/
       case "SPOTIFY_PLAY":
         this.Spotify.updateCurrentSpotify(payload);
-        if (this.SCL && this.init && this.SPOTIFYCL_Ready && (this.ForceSCL || (payload.device && payload.device.name === this.Player.deviceName))) {
-          this.CanvasLyrics.updateCurrentSpotify(payload);
-          this.HideOrShow(true);
-          this.SPOTIFYCL = true;
-        } else this.Spotify.updateCurrentSpotify(payload);
+        this.Spotify.updateCurrentSpotify(payload);
         if (!this.spotify.connected) return; // don't check if not connected (use spotify callback)
         if (payload && payload.device && payload.device.name) {
           this.spotify.is_playing = payload.is_playing;
@@ -361,10 +291,6 @@ Module.register("EXT-Spotify", {
             if (!this.spotify.player) {
               this.spotify.player = true;
               logSpotify("SPOTIFY_PLAY: PLAYER Connected");
-              if (this.SCL) {
-                this.HideOrShow(true);
-                this.SPOTIFYCL = true;
-              }
               this.sendNotification("EXT_SPOTIFY-PLAYER_CONNECTED");
             }
           }
@@ -372,17 +298,10 @@ Module.register("EXT-Spotify", {
             if (this.spotify.player) {
               this.spotify.player = false;
               logSpotify("SPOTIFY_PLAY: PLAYER Disconnected");
-              if (this.SCL) {
-                this.SPOTIFYCL = false;
-                this.HideOrShow(false);
-              }
               this.sendNotification("EXT_SPOTIFY-PLAYER_DISCONNECTED");
             }
           }
         }
-        break;
-      case "SPOTIFY_DEVICELIST":
-        this.CanvasLyrics.updateDevicesList(payload.devices);
         break;
       case "SPOTIFY_IDLE":
         this.Spotify.updatePlayback(false);
@@ -418,29 +337,6 @@ Module.register("EXT-Spotify", {
     }
   },
 
-  HideOrShow (hide) {
-    if (this.SPOTIFYCL) return;
-    let SpotifyWrapper = document.getElementById("EXT_SPOTIFY");
-    let SpotifyCLWrapper = document.getElementById("EXT_SPOTIFYCL");
-    if (hide) {
-      MM.getModules().enumerate((module) => {
-        module.hide(200, () => {}, { lockString: "EXT-SPOTIFY_LOCKED" });
-      });
-      removeAnimateCSS("EXT_SPOTIFYCL", "backOutRight");
-      addAnimateCSS("EXT_SPOTIFYCL", "backInLeft",1);
-      SpotifyCLWrapper.style.display= "block";
-    } else {
-      removeAnimateCSS("EXT_SPOTIFYCL", "backInLeft");
-      addAnimateCSS("EXT_SPOTIFYCL", "backOutRight",1);
-      setTimeout(() => {
-        SpotifyCLWrapper.style.display= "none";
-        MM.getModules().enumerate((module)=> {
-          module.show(200, () => {}, { lockString: "EXT-SPOTIFY_LOCKED" });
-        });
-      },1000);
-    }
-  },
-
   /****************************/
   /*** TelegramBot Commands ***/
   /****************************/
@@ -450,13 +346,6 @@ Module.register("EXT-Spotify", {
       description: "Spotify commands",
       callback: "tbSpotify"
     });
-    if (this.SCL) {
-      commander.add({
-        command: "lyrics",
-        description: "Spotify Canvas Lyrics",
-        callback: "tbSCL"
-      });
-    }
   },
 
   tbSpotify (command, handler) {
@@ -508,29 +397,6 @@ Module.register("EXT-Spotify", {
   *previous*: Previous track\n\
   *volume*: Volume control, it need a value 0-100\n\
   *to*: Transfert music to another device (case sensitive)\
-  ",{ parse_mode:"Markdown" });
-    }
-  },
-
-  tbSCL (command, handler) {
-    if (handler.args) {
-      var args = handler.args.toLowerCase().split(" ");
-      var params = handler.args.split(" ");
-      if (args[0] === "on") {
-        handler.reply("TEXT", "Turn on Lyrics");
-        this.notificationReceived("EXT_SPOTIFY-SCL", true);
-      }
-      else if (args[0] === "off") {
-        handler.reply("TEXT", "Turn off Lyrics");
-        this.notificationReceived("EXT_SPOTIFY-SCL", false);
-      }
-      else {
-        handler.reply("TEXT", "I don't know... Try /lyrics",{ parse_mode:"Markdown" });
-      }
-    } else {
-      handler.reply("TEXT", "Need Help for /lyrics commands ?\n\n\
-  *on*: Turn on Canvas Lyrics mode\n\
-  *off*: Turn off Canvas Lyrics mode\
   ",{ parse_mode:"Markdown" });
     }
   },
