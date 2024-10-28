@@ -113,7 +113,7 @@ Module.register("EXT-Spotify", {
           case "VOLUME":
             let Volume = param;
             if (isNaN(Volume)) {
-              this.sendNotification("EXT_ALERT", {
+              this.sendNotification("GA_ALERT", {
                 type: "error",
                 message: "Volume MUST be a number ! [0-100]",
                 icon: "modules/EXT-Spotify/components/Spotify-Logo.png"
@@ -130,7 +130,7 @@ Module.register("EXT-Spotify", {
         }
       },
       alert: (params) => {
-        this.sendNotification("EXT_ALERT", params);
+        this.sendNotification("GA_ALERT", params);
       }
     };
     this.configHelper = {
@@ -220,7 +220,7 @@ Module.register("EXT-Spotify", {
         let setVolume = payload;
         if (!this.spotify.player || !setVolume) return;
         if (isNaN(setVolume)) {
-          this.sendNotification("EXT_ALERT", {
+          this.sendNotification("GA_ALERT", {
             type: "error",
             message: "Volume MUST be a number ! [0-100]",
             icon: "modules/EXT-Spotify/components/Spotify-Logo.png"
@@ -311,21 +311,21 @@ Module.register("EXT-Spotify", {
         logSpotify("Volume done:", payload);
         break;
       case "INFORMATION":
-        this.sendNotification("EXT_ALERT", {
+        this.sendNotification("GA_ALERT", {
           type: "information",
           message: this.translate(payload.message, { VALUES: payload.values }),
           icon: "modules/EXT-Spotify/components/Spotify-Logo.png"
         });
         break;
       case "WARNING":
-        this.sendNotification("EXT_ALERT", {
+        this.sendNotification("GA_ALERT", {
           type: "warning",
           message: this.translate(payload.message, { VALUES: payload.values }),
           icon: "modules/EXT-Spotify/components/Spotify-Logo.png"
         });
         break;
       case "SUCCESS":
-        this.sendNotification("EXT_ALERT", {
+        this.sendNotification("GA_ALERT", {
           type: "success",
           message: this.translate(payload.message, { VALUES: payload.values }),
           icon: "modules/EXT-Spotify/components/Spotify-Logo.png"
