@@ -13,7 +13,7 @@ const moment = require("moment");
 var _Debug = (...args) => { /* do nothing */ };
 
 class Spotify {
-  constructor (config, callback, debug = false, first = false, SCL = false) {
+  constructor (config, callback, debug = false, first = false) {
     this.notification = callback;
     this.default = {
       CLIENT_ID: "",
@@ -30,13 +30,12 @@ class Spotify {
     this.timer = null;
     this.token = null;
     this.setup = first;
-    this.SCL = SCL;
     this.config = Object.assign({}, this.default, config);
     if (debug) _Debug = (...args) => { console.log("[SPOTIFY]", ...args); };
 
     this.authorizationSeed = `Basic ${  
       Buffer.from(
-        `${this.config.CLIENT_ID  }:${  this.config.CLIENT_SECRET}`
+        `${this.config.CLIENT_ID}:${this.config.CLIENT_SECRET}`
       ).toString("base64")}`;
     this.initFromToken();
     _Debug("Spotify library Initialized...");

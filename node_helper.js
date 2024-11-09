@@ -151,8 +151,7 @@ module.exports = NodeHelper.create({
           this.sendSocketNotification(noti, params);
         },
         this.config.debug,
-        false,
-        this.config.SCL);
+        false);
       this.spotify.start();
     } catch (e) {
       let error = "SPOTIFY: tokenSpotify.json file not found !";

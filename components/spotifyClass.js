@@ -6,7 +6,6 @@ class Spotify {
     this.debug = this.config.debug;
     this.spotifyStatus = callbacks.spotifyStatus;
     this.spotifyPlaying = callbacks.spotifyPlaying;
-    this.spotifyForceSCL = callbacks.spotifyForceSCL;
     this.currentPlayback = null;
     this.connected = false;
     this.timer = null;
@@ -28,9 +27,6 @@ class Spotify {
 
     const cover_img = this.getHTMLElementWithID("img", "EXT_SPOTIFY_COVER_IMAGE");
     cover_img.className = "fade-in";
-    cover_img.addEventListener("click", (e) => {
-      this.spotifyForceSCL();
-    });
 
     const cover = this.getHTMLElementWithID("div", "EXT_SPOTIFY_COVER");
     cover.appendChild(cover_img);
@@ -292,7 +288,7 @@ class Spotify {
   }
 
   getFAIconClass (iconType) {
-    return `infoicon ${  this.getFAIcon(iconType)}`;
+    return `infoicon ${this.getFAIcon(iconType)}`;
   }
 
   getIconContainer (className, id, icon) {
