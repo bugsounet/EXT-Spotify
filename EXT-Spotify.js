@@ -4,7 +4,9 @@
  ** support: https://www.bugsounet.fr
  **/
 
-logSpotify = (...args) => { /* do nothing */ };
+/* global Spotify */
+
+var logSpotify = () => { /* do nothing */ };
 
 Module.register("EXT-Spotify", {
   requiresVersion: "2.28.0",
@@ -47,13 +49,13 @@ Module.register("EXT-Spotify", {
       if (Librespot) {
         try {
           this.Player.minVolume = Librespot.config.minVolume ? Librespot.config.minVolume : 30;
-        } catch (e) { }
+        } catch { /* do nothing */ }
         try {
           this.Player.maxVolume = Librespot.config.maxVolume ? Librespot.config.maxVolume : 100;
-        } catch (e) { }
+        } catch { /* do nothing */ }
         try {
           this.Player.deviceName = Librespot.config.deviceName ? Librespot.config.deviceName : "MagicMirror";
-        } catch (e) { }
+        } catch { /* do nothing */ }
       }
     }
 
@@ -115,7 +117,7 @@ Module.register("EXT-Spotify", {
             this.sendSocketNotification("SPOTIFY_TRANSFER_BYID", param);
             break;
           case "VOLUME":
-            let Volume = param;
+            var Volume = param;
             if (isNaN(Volume)) {
               this.sendNotification("GA_ALERT", {
                 type: "error",
@@ -222,7 +224,7 @@ Module.register("EXT-Spotify", {
         this.sendSocketNotification("SPOTIFY_VOLUME", this.spotify.targetVolume);
         break;
       case "EXT_SPOTIFY-VOLUME_SET":
-        let setVolume = payload;
+        var setVolume = payload;
         if (!this.spotify.player || !setVolume) return;
         if (isNaN(setVolume)) {
           this.sendNotification("GA_ALERT", {
@@ -433,7 +435,7 @@ Module.register("EXT-Spotify", {
         this.sendSocketNotification("SPOTIFY_SHUFFLE", !this.spotify.shuffle);
         break;
       case "REPEAT":
-        let nextRepeatState;
+        var nextRepeatState;
         if (this.spotify.repeat === "off") nextRepeatState = "context";
         if (this.spotify.repeat === "context") nextRepeatState = "track";
         if (this.spotify.repeat === "track") nextRepeatState = "off";
