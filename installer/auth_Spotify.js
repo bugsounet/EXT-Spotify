@@ -3,7 +3,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const Spotify = require("../components/spotifyLib.js");
+const Spotify = require("../components/spotifyLib");
 
 let file = path.resolve(__dirname, "../../../config/config.js");
 let found = false;
@@ -17,7 +17,7 @@ if (fs.existsSync(file)) {
   process.exit();
 }
 
-for (let [nb, module] of Object.entries(MMModules)) {
+MMModules.forEach((module) => {
   if (module.module === "EXT-Spotify") {
     found = true;
     if (!module.config) {
@@ -39,7 +39,7 @@ for (let [nb, module] of Object.entries(MMModules)) {
     config.CLIENT_ID = module.config.CLIENT_ID;
     config.PATH = "../";
   }
-}
+});
 
 if (!found) {
   console.log("EXT-Spotify not configured in config.js");
@@ -47,6 +47,7 @@ if (!found) {
 }
 
 let Auth = new Spotify(config, null, true, true);
+
 Auth.authFlow(() => {
   console.log("[SPOTIFY_AUTH] Authorization is finished. Check ", config.TOKEN);
 }, (e) => {
