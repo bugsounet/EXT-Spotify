@@ -10,7 +10,7 @@ const express = require("express");
 const app = express();
 const moment = require("moment");
 
-var _Debug = (...args) => { /* do nothing */ };
+var _Debug = () => { /* do nothing */ };
 
 class Spotify {
   constructor (config, callback, debug = false, first = false) {
@@ -80,7 +80,7 @@ class Spotify {
     });
   }
 
-  updateSpotify (spotify) {
+  updateSpotify () {
     return new Promise((resolve, reject) => {
       this.getCurrentPlayback((code, error, result) => {
         if (result === "undefined" || code !== 200) {
@@ -228,11 +228,13 @@ class Spotify {
     this.doRequest("/v1/me/player/next", "POST", null, null, cb);
   }
 
+  /* eslint-disable no-unused-vars */
   previous (cb) {
     this.doRequest("/v1/me/player/seek", "PUT", { position_ms: 0 }, null, (code, error, body) => {
       this.doRequest("/v1/me/player/previous", "POST", null, null, cb);
     });
   }
+  /* eslint-enable no-unused-vars */
 
   seek (position, cb) {
     this.doRequest("/v1/me/player/seek", "PUT", { position_ms: position }, null, cb);
@@ -330,7 +332,7 @@ class Spotify {
           res.send(`${this.config.TOKEN} would be created. Check it`);
           afterCallback();
         })
-        .catch((error) => {
+        .catch(() => {
           err("[SPOTIFY_AUTH] Error in request");
         });
     }).listen(this.config.AUTH_PORT);
