@@ -1,11 +1,9 @@
 "use strict";
 
-const path = require("path");
-const fs = require("fs");
 var NodeHelper = require("node_helper");
 
-var logSpotify = (...args) => { /* do nothing */ };
-const spotify = require("./components/spotifyLib.js");
+var logSpotify = () => { /* do nothing */ };
+const spotify = require("./components/spotifyLib");
 
 module.exports = NodeHelper.create({
   start () {
