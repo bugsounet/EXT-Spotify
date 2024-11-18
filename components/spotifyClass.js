@@ -101,6 +101,7 @@ class Spotify {
         this.ads = false;
         return;
       }
+
       /** prevent all error **/
       if (!current.item || !current.device || !current.progress_ms || !current.item.duration_ms || !this.currentPlayback.item) return this.currentPlayback = null;
       if (!this.currentPlayback.item) return this.currentPlayback = current;
@@ -124,16 +125,16 @@ class Spotify {
 
   msToTime (duration) {
     let ret = "";
-    let seconds = parseInt((duration / 1000) % 60)
-      , minutes = parseInt((duration / (1000 * 60)) % 60)
-      , hours = parseInt((duration / (1000 * 60 * 60)) % 24);
+    let seconds = parseInt((duration / 1000) % 60),
+      minutes = parseInt((duration / (1000 * 60)) % 60),
+      hours = parseInt((duration / (1000 * 60 * 60)) % 24);
     if (hours > 0) {
-      hours = (hours < 10) ? `0${  hours}` : hours;
-      ret = `${ret + hours  }:`;
+      hours = (hours < 10) ? `0${hours}` : hours;
+      ret = `${ret + hours}:`;
     }
-    minutes = (minutes < 10) ? `0${  minutes}` : minutes;
-    seconds = (seconds < 10) ? `0${  seconds}` : seconds;
-    return `${ret + minutes  }:${  seconds}`;
+    minutes = (minutes < 10) ? `0${minutes}` : minutes;
+    seconds = (seconds < 10) ? `0${seconds}` : seconds;
+    return `${ret + minutes}:${seconds}`;
   }
 
   updateProgress (progressMS, durationMS) {
@@ -148,7 +149,7 @@ class Spotify {
     const deviceContainer = document.querySelector("#EXT_SPOTIFY_DEVICE .text");
     const deviceIcon = document.getElementById("EXT_SPOTIFY_DEVICE_ICON");
 
-    deviceContainer.textContent = `${this.config.deviceDisplay  } ${  device.name}`;
+    deviceContainer.textContent = `${this.config.deviceDisplay} ${device.name}`;
     deviceIcon.className = this.getFAIconClass(device.type);
   }
 
@@ -156,7 +157,7 @@ class Spotify {
     const volumeContainer = document.querySelector("#EXT_SPOTIFY_VOLUME .text");
     const volumeIcon = document.getElementById("EXT_SPOTIFY_VOLUME_ICON");
 
-    volumeContainer.textContent = `${volume_percent  }%`;
+    volumeContainer.textContent = `${volume_percent}%`;
     volumeIcon.className = this.getVolumeIconClass(volume_percent);
   }
 
@@ -194,11 +195,11 @@ class Spotify {
 
     var img_url;
     var display_name;
-    if (playbackItem.album){
+    if (playbackItem.album) {
       img_url = playbackItem.album.images[img_index].url;
       display_name = playbackItem.album.name;
     }
-    else{
+    else {
       img_url = playbackItem.images[img_index].url;
       display_name = playbackItem.show.name;
     }
@@ -226,15 +227,15 @@ class Spotify {
     const artist = document.querySelector("#EXT_SPOTIFY_ARTIST .text");
     const artists = playbackItem.artists;
     let artistName = "";
-    if (playbackItem.album){
+    if (playbackItem.album) {
       for (let x = 0; x < artists.length; x++) {
         if (!artistName) {
           artistName = artists[x].name;
         } else {
-          artistName += `, ${  artists[x].name}`;
+          artistName += `, ${artists[x].name}`;
         }
       }
-    } else{
+    } else {
       artistName = playbackItem.show.publisher;
     }
     artist.textContent = artistName;
@@ -351,7 +352,7 @@ class Spotify {
   getControlButton (id, icon) {
     const button = this.getHTMLElementWithID("div", id);
     button.className = "off";
-    button.appendChild(this.getIconContainer("iconify", `${id  }_ICON`, icon));
+    button.appendChild(this.getIconContainer("iconify", `${id}_ICON`, icon));
 
     return button;
   }

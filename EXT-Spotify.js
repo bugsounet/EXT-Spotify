@@ -20,8 +20,9 @@ Module.register("EXT-Spotify", {
 
   start () {
     if (this.config.debug) logSpotify = (...args) => { console.log("[SPOTIFY]", ...args); };
+
     /** make default config **/
-    this.Player= {
+    this.Player = {
       usePlayer: false,
       deviceName: "MagicMirror",
       minVolume: 30,
@@ -37,6 +38,7 @@ Module.register("EXT-Spotify", {
     };
     this.init = false;
     this.SpotifyCurrentID = null;
+
     /** Search player **/
     let Librespot = config.modules.find((m) => m.module === "EXT-Librespot");
     if (Librespot && !Librespot.disabled) {
@@ -55,7 +57,7 @@ Module.register("EXT-Spotify", {
       }
     }
 
-    this.spotify= {
+    this.spotify = {
       connected: false,
       player: false,
       is_playing: false,
@@ -64,14 +66,16 @@ Module.register("EXT-Spotify", {
       repeat: null,
       shuffle: null
     };
-    this.assistantSpeak= false;
+    this.assistantSpeak = false;
     var callbacks = {
       spotifyStatus: (status) => {
         if (status) {
+
           /** Spotify active **/
           this.spotify.connected = true;
           this.sendNotification("EXT_SPOTIFY-CONNECTED");
         } else {
+
           /** Spotify inactive **/
           this.sendNotification("EXT_SPOTIFY-DISCONNECTED");
           this.spotify.connected = false;
@@ -85,7 +89,7 @@ Module.register("EXT-Spotify", {
       },
       init: () => { this.init = true; },
       command: (command, param) => {
-        switch(command) {
+        switch (command) {
           case "PLAY":
             this.SpotifyCommand("PLAY");
             break;
@@ -145,7 +149,7 @@ Module.register("EXT-Spotify", {
       hide: (...args) => this.hide(...args),
       show: (...args) => this.show(...args)
     };
-    logSpotify("configHelper:" , this.configHelper);
+    logSpotify("configHelper:", this.configHelper);
     this.Spotify = new Spotify(this.configClass, callbacks);
   },
 
@@ -181,12 +185,13 @@ Module.register("EXT-Spotify", {
   },
 
   getDom () {
+
     /** Create Spotify **/
     return this.Spotify.prepare();
   },
 
   notificationReceived (noti, payload, sender) {
-    switch(noti) {
+    switch (noti) {
       case "GA_READY":
         if (sender.name === "MMM-GoogleAssistant") {
           this.sendSocketNotification("INIT", this.configHelper);
@@ -199,11 +204,11 @@ Module.register("EXT-Spotify", {
       case "ASSISTANT_CONTINUE":
       case "ASSISTANT_CONFIRMATION":
       case "ASSISTANT_ERROR":
-        this.assistantSpeak= true;
+        this.assistantSpeak = true;
         break;
       case "ASSISTANT_HOOK":
       case "ASSISTANT_STANDBY":
-        this.assistantSpeak= false;
+        this.assistantSpeak = false;
         break;
       case "EXT_SPOTIFY-VOLUME_MIN":
         if (!this.spotify.player) return;
@@ -276,7 +281,8 @@ Module.register("EXT-Spotify", {
   },
 
   socketNotificationReceived (noti, payload) {
-    switch(noti) {
+    switch (noti) {
+
       /** Spotify module **/
       case "SPOTIFY_PLAY":
         this.Spotify.updateCurrentSpotify(payload);
@@ -377,13 +383,13 @@ Module.register("EXT-Spotify", {
           if (isNaN(args[1])) return handler.reply("TEXT", "Must be a number ! [0-100]");
           if (args[1] > 100) args[1] = 100;
           if (args[1] < 0) args[1] = 0;
-          handler.reply("TEXT", `Spotify VOLUME: ${  args[1]}`);
+          handler.reply("TEXT", `Spotify VOLUME: ${args[1]}`);
           this.SpotifyCommand("VOLUME", args[1]);
         } else handler.reply("TEXT", "Define volume [0-100]");
       }
       if (args[0] === "to") {
         if (args[1]) {
-          handler.reply("TEXT", `Spotify TRANSFER to: ${  params[1]  } (if exist !)`);
+          handler.reply("TEXT", `Spotify TRANSFER to: ${params[1]} (if exist !)`);
           this.SpotifyCommand("TRANSFER", params[1]);
         }
         else handler.reply("TEXT", "Define the device name (case sensitive)");
@@ -397,7 +403,7 @@ Module.register("EXT-Spotify", {
   *previous*: Previous track\n\
   *volume*: Volume control, it need a value 0-100\n\
   *to*: Transfert music to another device (case sensitive)\
-  ",{ parse_mode:"Markdown" });
+  ", { parse_mode: "Markdown" });
     }
   },
 
@@ -443,15 +449,16 @@ Module.register("EXT-Spotify", {
         this.sendSocketNotification("SPOTIFY_SEEK", payload);
         break;
       case "SEARCH":
+
         /** enforce type **/
         var searchType = payload.query.split(" ");
         var type = null;
         if (searchType[0] === this.translate("SpotifySearchTypePlaylist")) type = "playlist";
-        else if (searchType[0] === this.translate("SpotifySearchTypeAlbum")) type= "album";
-        else if (searchType[0] === this.translate("SpotifySearchTypeTrack")) type= "track";
-        else if (searchType[0] === this.translate("SpotifySearchTypeArtist")) type= "artist";
+        else if (searchType[0] === this.translate("SpotifySearchTypeAlbum")) type = "album";
+        else if (searchType[0] === this.translate("SpotifySearchTypeTrack")) type = "track";
+        else if (searchType[0] === this.translate("SpotifySearchTypeArtist")) type = "artist";
         if (type) {
-          payload.query = payload.query.replace(`${searchType[0]  } `,"");
+          payload.query = payload.query.replace(`${searchType[0]} `, "");
           payload.type = type;
         }
         var pl = {
