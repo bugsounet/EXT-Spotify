@@ -10,7 +10,7 @@ const express = require("express");
 const app = express();
 const moment = require("moment");
 
-var _Debug = (...args) => { /* do nothing */ };
+var _Debug = () => { /* do nothing */ };
 
 class Spotify {
   constructor (config, callback, debug = false, first = false) {
@@ -33,7 +33,7 @@ class Spotify {
     this.config = Object.assign({}, this.default, config);
     if (debug) _Debug = (...args) => { console.log("[SPOTIFY]", ...args); };
 
-    this.authorizationSeed = `Basic ${  
+    this.authorizationSeed = `Basic ${
       Buffer.from(
         `${this.config.CLIENT_ID}:${this.config.CLIENT_SECRET}`
       ).toString("base64")}`;
@@ -60,7 +60,7 @@ class Spotify {
     _Debug("Started...");
     this.pulse();
   }
-    
+
   stop () {
     clearTimeout(this.timer);
     this.timer = null;
@@ -79,8 +79,8 @@ class Spotify {
       }
     });
   }
-    
-  updateSpotify (spotify) {
+
+  updateSpotify () {
     return new Promise((resolve, reject) => {
       this.getCurrentPlayback((code, error, result) => {
         if (result === "undefined" || code !== 200) {
@@ -109,7 +109,7 @@ class Spotify {
       this.token = JSON.parse(fs.readFileSync(file));
     }
     else {
-      if (!this.setup) throw Error(`[SPOTIFY:ERROR] Token not found in ${  file}`);
+      if (!this.setup) throw Error(`[SPOTIFY:ERROR] Token not found in ${file}`);
     }
   }
 
@@ -169,7 +169,7 @@ class Spotify {
     if (bodyParam) authOptions.body = JSON.stringify(bodyParam);
     if (qsParam) {
       let Params = new URLSearchParams(qsParam);
-      url = `${url  }/?${  Params}`;
+      url = `${url}/?${Params}`;
     }
 
     var req = () => {
@@ -187,7 +187,7 @@ class Spotify {
           if (api !== "/v1/me/player" && type !== "GET") _Debug("API Requested:", api);
           if (cb) cb(status, null, data);
         })
-        .catch ((error) => {
+        .catch((error) => {
           _Debug("API Request fail on :", api);
           if (status) _Debug("---> Error", status, statusText, "qsParam:", qsParam, "authOptions:", authOptions);
           if (cb) {
@@ -228,13 +228,15 @@ class Spotify {
     this.doRequest("/v1/me/player/next", "POST", null, null, cb);
   }
 
+  /* eslint-disable no-unused-vars */
   previous (cb) {
     this.doRequest("/v1/me/player/seek", "PUT", { position_ms: 0 }, null, (code, error, body) => {
       this.doRequest("/v1/me/player/previous", "POST", null, null, cb);
     });
   }
+  /* eslint-enable no-unused-vars */
 
-  seek (position,cb) {
+  seek (position, cb) {
     this.doRequest("/v1/me/player/seek", "PUT", { position_ms: position }, null, cb);
   }
 
@@ -308,7 +310,7 @@ class Spotify {
         redirect_uri: redirect_uri,
         grant_type: "authorization_code"
       });
-      let authOptions ={
+      let authOptions = {
         method: "POST",
         body: data.toString(),
         headers: {
@@ -330,7 +332,7 @@ class Spotify {
           res.send(`${this.config.TOKEN} would be created. Check it`);
           afterCallback();
         })
-        .catch ((error) => {
+        .catch(() => {
           err("[SPOTIFY_AUTH] Error in request");
         });
     }).listen(this.config.AUTH_PORT);
@@ -358,6 +360,6 @@ class Spotify {
 async function loadOpen () {
   const loaded = await import("open");
   return loaded.default;
-};
+}
 
 module.exports = Spotify;

@@ -1,16 +1,14 @@
 "use strict";
 
-const path = require("path");
-const fs = require("fs");
 var NodeHelper = require("node_helper");
 
-var logSpotify = (...args) => { /* do nothing */ };
-const spotify = require("./components/spotifyLib.js");
+var logSpotify = () => { /* do nothing */ };
+const spotify = require("./components/spotifyLib");
 
 module.exports = NodeHelper.create({
   start () {
     this.retry = null;
-    this.timeout= null;
+    this.timeout = null;
     this.retryPlayerCount = 0;
   },
 
@@ -20,10 +18,11 @@ module.exports = NodeHelper.create({
         console.log("[SPOTIFY] EXT-Spotify Version:", require("./package.json").version, "rev:", require("./package.json").rev);
         this.initialize(payload);
         break;
+
       /** Spotify module **/
       case "SPOTIFY_RETRY_PLAY":
         clearTimeout(this.timeout);
-        this.timeout= null;
+        this.timeout = null;
         clearTimeout(this.retry);
         this.retry = null;
         this.retry = setTimeout(() => {
@@ -33,8 +32,7 @@ module.exports = NodeHelper.create({
               this.socketNotificationReceived("SPOTIFY_PLAY", payload);
             }
             if ((code !== 204) && (code !== 202)) {
-              if (this.config.player.usePlayer)
-                this.sendSocketNotification("WARNING", { message: "PlayerNoResponse", values: this.config.player.deviceName });
+              if (this.config.player.usePlayer) this.sendSocketNotification("WARNING", { message: "PlayerNoResponse", values: this.config.player.deviceName });
               return console.log("[SPOTIFY:PLAY] RETRY Error", code, error, result);
             }
             else {
@@ -48,7 +46,7 @@ module.exports = NodeHelper.create({
       case "SPOTIFY_PLAY":
         this.spotify.play(payload, (code, error, result) => {
           clearTimeout(this.timeout);
-          this.timeout= null;
+          this.timeout = null;
           if ((code === 404) && (result.error.reason === "NO_ACTIVE_DEVICE")) {
             this.retryPlayerCount++;
             if (this.retryPlayerCount >= 4) return this.retryPlayerCount = 0;
@@ -56,7 +54,7 @@ module.exports = NodeHelper.create({
               console.log("[SPOTIFY] No response from player !");
               this.sendSocketNotification("INFORMATION", { message: "PlayerConnecting" });
               this.sendSocketNotification("PLAYER_RECONNECT");
-              this.timeout= setTimeout(() => {
+              this.timeout = setTimeout(() => {
                 this.socketNotificationReceived("SPOTIFY_TRANSFER", this.config.player.deviceName);
                 this.socketNotificationReceived("SPOTIFY_RETRY_PLAY", payload);
               }, 3000);
@@ -114,7 +112,7 @@ module.exports = NodeHelper.create({
         });
         break;
       case "SPOTIFY_SHUFFLE":
-        this.spotify.shuffle(payload,(code, error, result) => {
+        this.spotify.shuffle(payload, (code, error, result) => {
           if ((code !== 204) && (code !== 202)) console.log("[SPOTIFY:SHUFFLE] Error", code, result);
           else logSpotify("DONE_SHUFFLE");
         });
@@ -155,8 +153,8 @@ module.exports = NodeHelper.create({
       this.spotify.start();
     } catch (e) {
       let error = "SPOTIFY: tokenSpotify.json file not found !";
-      console.log(`[SPOTIFY] Error From library: ${  e}`);
-      this.sendSocketNotification("WARNING" , {  message: error });
+      console.log(`[SPOTIFY] Error From library: ${e}`);
+      this.sendSocketNotification("WARNING", { message: error });
     }
   },
 
@@ -205,11 +203,11 @@ module.exports = NodeHelper.create({
           this.socketNotificationReceived("SPOTIFY_PLAY", foundForPlay);
         } else {
           logSpotify("Search and Play No Result");
-          this.sendSocketNotification("WARNING" , { message: "SpotifyNoResult" });
+          this.sendSocketNotification("WARNING", { message: "SpotifyNoResult" });
         }
       } else { //when fail
         console.log("[SPOTIFY] Search and Play failed !");
-        this.sendSocketNotification("WARNING" , { message: "SpotifySearchFailed" });
+        this.sendSocketNotification("WARNING", { message: "SpotifySearchFailed" });
       }
     });
   },
