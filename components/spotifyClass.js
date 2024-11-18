@@ -1,5 +1,6 @@
 /* Spotify class rev: 220918 */
 
+/* eslint-disable-next-line */
 class Spotify {
   constructor (Config, callbacks) {
     this.config = Config;
@@ -188,8 +189,6 @@ class Spotify {
   updateSongInfo (playbackItem) {
     if (!playbackItem) return;
 
-    const sDom = document.getElementById("EXT_SPOTIFY");
-
     const cover_img = document.getElementById("EXT_SPOTIFY_COVER_IMAGE");
     let img_index = 1;
 
@@ -208,12 +207,14 @@ class Spotify {
 
       const back = document.getElementById("EXT_SPOTIFY_BACKGROUND");
       back.classList.remove("fade-in");
-      let backOffSet = cover_img.offsetWidth;
+      /* eslint-disable-next-line */
+      let backOffSet = cover_img.offsetWidth; // needed !
       back.classList.add("fade-in");
       back.style.backgroundImage = `url(${img_url})`;
 
       cover_img.classList.remove("fade-in");
-      let offset = cover_img.offsetWidth;
+      /* eslint-disable-next-line */
+      let offset = cover_img.offsetWidth; // needed !
       cover_img.classList.add("fade-in");
       cover_img.src = img_url;
     }
