@@ -350,14 +350,6 @@ class Spotify {
     return logo;
   }
 
-  getControlButton (id, icon) {
-    const button = this.getHTMLElementWithID("div", id);
-    button.className = "off";
-    button.appendChild(this.getIconContainer("iconify", `${id}_ICON`, icon));
-
-    return button;
-  }
-
   getInfoContainer () {
     const info = this.getHTMLElementWithID("div", "EXT_SPOTIFY_INFO");
     const infoElementsWithIcon = {
