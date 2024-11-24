@@ -156,16 +156,13 @@ Module.register("EXT-Spotify", {
   },
 
   getScripts () {
-    return [
-      "/modules/EXT-Spotify/components/spotifyClass.js",
-      "https://code.iconify.design/1/1.0.6/iconify.min.js"
-    ];
+    return ["/modules/EXT-Spotify/components/spotifyClass.js"];
   },
 
   getStyles () {
     return [
       "EXT-Spotify.css",
-      "https://cdn.materialdesignicons.com/5.2.45/css/materialdesignicons.min.css",
+      "/modules/EXT-Spotify/node_modules/@mdi/font/css/materialdesignicons.min.css",
       "font-awesome.css"
     ];
   },
