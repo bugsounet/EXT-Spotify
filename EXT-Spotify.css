@@ -252,6 +252,7 @@ progress[value]#EXT_SPOTIFY_PROGRESS_BAR::-webkit-progress-bar {
   text-align: center;
   left: auto;
   transform: none;
+  color: #1db954;
 }
 
 #EXT_SPOTIFY.mini #EXT_SPOTIFY_VOLUME .infoicon {
